@@ -79,7 +79,7 @@ const CommentSection=({
 
         {post_id && comments?.map((comment: Comment): ReactElement =>{
           return(
-          <ListItem key={comment?._id} alignItems="flex-start">
+          <ListItem key={comment?._id.toString()} alignItems="flex-start">
             <ListItemAvatar><Avatar alt={comment?.user?.first_name} src={comment?.user?.imageUrl} /></ListItemAvatar>
             <ListItemText
               primary={comment?.content}
