@@ -1,9 +1,9 @@
 module.exports = {
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Important: return the modified config
-    return config
+  future: {
+    webpack5: true,
   },
-  future: { 
-    webpack5: true
-  }
-}
+  webpack: function (config, options) {
+    config.experiments = {};
+    return config;
+  },
+};
