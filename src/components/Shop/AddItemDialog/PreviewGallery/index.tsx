@@ -1,4 +1,4 @@
-import React, {ReactElement, useState, useEffect, Dispatch, SetStateAction, ChangeEvent, HTMLInputElement} from 'react'
+import React, {ReactElement, useState, useEffect, Dispatch, SetStateAction, ChangeEvent} from 'react'
 import useStyles from './style'
 import {IconButton, Button, Typography} from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
