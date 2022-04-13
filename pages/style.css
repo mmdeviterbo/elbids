@@ -1,0 +1,11 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.image-gallery-slide img{
+  height: calc(350px + 4vh);
+  object-fit: cover;
+}
+ /* maroon - #820016 */
