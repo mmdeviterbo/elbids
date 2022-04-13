@@ -15,7 +15,7 @@ const CommentSection=({
   full_name,
   imageUrl
 }:{
-  open: Boolean
+  open?: Boolean
   post_id: ObjectId
   user_id: ObjectId
   full_name: string
