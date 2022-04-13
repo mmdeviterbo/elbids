@@ -85,8 +85,8 @@ const ViewPostDialog=({
   })
 
   const userState = useQuery(userQuery,{    //who currently logged in
-    skip: !getUser().email || !open,
-    variables: { email : getUser().email },
+    skip: !getUser()?.email || !open,
+    variables: { email : getUser()?.email },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network'
   })

@@ -1,11 +1,12 @@
 import bcrypt from 'bcryptjs'
-import { NextRequest } from 'next/server';
+import getUser from './getUser'
+import { CookieArgs } from './../types/index';
 
-const authenticate =async(req: NextRequest): Promise<boolean>=>{
+const authenticate =async(): Promise<boolean>=>{
   let isValid: boolean = false
   try{
-    const { currentUser } = req.cookies
-    const {email, full_name, token} = JSON.parse(currentUser)
+    const user: CookieArgs  = getUser()
+    const { email, full_name, token } = user
     const namesToken: string = email + '' + full_name + '19981012*'
     isValid = await bcrypt.compare(namesToken, token)
   }catch(err){
