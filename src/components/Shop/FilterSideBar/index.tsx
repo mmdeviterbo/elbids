@@ -17,7 +17,7 @@ const FilterSideBar=({
   const queryMax_price = router.query.max_price as string
   const queryCategory = router.query.category as CATEGORY
   const queryDate_range = router.query.date_range as string
-  const queryTimer = router.query.timer as string 
+  const queryTimer = router.query.timer as TIMER_OPTIONS 
   const querySearch = router.query.search as string
   const queryTags = router.query.tags as string
 
@@ -209,7 +209,7 @@ const FilterSideBar=({
           let query: PostFilter = {}
           if(min_price) query.min_price = parseInt(min_price)
           if(max_price) query.max_price = parseInt(max_price)
-          if(timer) query.timer = timer
+          if(timer) query.timer = Object.values(TIMER_OPTIONS).find((timerVal: TIMER_OPTIONS)=>timerVal===timer) || TIMER_OPTIONS.FIVE_DAYS
           if(category) query.category = Object.values(CATEGORY).find((categoryVal: CATEGORY)=>categoryVal===category) || CATEGORY.ANY
           if(search) query.search = search
 
