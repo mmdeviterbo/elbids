@@ -13,7 +13,9 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import useStyles from './style'
 
 
-type Anchor = 'left' ;
+type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+
 
 const FilterSideBarMobile=(): ReactElement=> {
   const classes = useStyles();
