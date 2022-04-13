@@ -7,7 +7,6 @@ import { ObjectId } from 'bson'
 import commentMutation from './mutation'
 import commentQuery from './query'
 import { useQuery, useMutation } from '@apollo/client'
-import { Loader } from 'rsuite'
 
 const CommentSection=({
   open,
