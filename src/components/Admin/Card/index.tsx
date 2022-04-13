@@ -10,6 +10,7 @@ import { Box, Button } from '@material-ui/core';
 import useStyles from './style'
 import { STATUS, DATE_FORMAT } from '../../../types'
 import formatDate from '../../../utils/formatDate'
+import { ObjectId } from 'bson';
 
 const CardItem=({
   full_name,
@@ -25,7 +26,7 @@ const CardItem=({
   full_name: string
   first_name: string
   last_name: string
-  id: string
+  id: ObjectId
   email: string
   date_created: string
   status: String

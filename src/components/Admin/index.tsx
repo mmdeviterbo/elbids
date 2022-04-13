@@ -82,7 +82,7 @@ const AdminVerify: NextPage=(): ReactElement=>{
                       full_name={full_name} 
                       first_name={first_name} 
                       last_name={last_name}
-                      id={new ObjectId(id)}
+                      id={id}
                       email={email}
                       date_created={date_created}
                       status={status}
