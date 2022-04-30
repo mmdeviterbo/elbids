@@ -41,5 +41,6 @@
   "devDependencies": {
     "@types/node": "^17.0.23",
     "ts-loader": "^9.2.6"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }
