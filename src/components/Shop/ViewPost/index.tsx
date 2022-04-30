@@ -97,7 +97,7 @@ const ViewPost=(props): ReactElement=>{
     const refetchPost=async()=>{
       let tempQuery = router?.query?.postId as string
       if(tempQuery){
-        await findPostState.refetch({ _id: new ObjectId().toString(), deleted: false })
+        await findPostState.refetch({ _id: new ObjectId(tempQuery), deleted: true })
         await findPostState.stopPolling()
         await findPostState.refetch({ _id: new ObjectId(tempQuery), deleted: false })
         await findPostState.startPolling(500)
