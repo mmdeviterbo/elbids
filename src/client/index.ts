@@ -3,6 +3,6 @@ import { getURI } from '../utils/getURI';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: getURI("/graphql")
+  uri: "https://elbids-server.herokuapp.com"
 })
 export default client
