@@ -286,6 +286,7 @@ export interface Notification{
   user_id: ObjectId
   read: boolean
   type: string	
+  current_bid: number
   date_created: String
 }
 
