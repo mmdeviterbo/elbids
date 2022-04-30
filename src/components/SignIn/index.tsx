@@ -1,36 +1,42 @@
 import React, {ReactElement, useState, useEffect} from 'react';
-import axios from 'axios';
 import GoogleLogin from 'react-google-login'
 import Cookies from 'js-cookie'
-import { ObjectId } from 'bson';
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { Grid } from '@material-ui/core';
+import { Grid, Typography, Link, Box } from '@material-ui/core';
 import { User } from "../../types"
-import mutation from "./mutation"
+import {insertUserMutation, updateUserMutation} from "./mutation"
 import generateToken from './../../utils/generateToken';
-import { getURI } from '../../utils/getURI';
 import { STATUS } from '../../types';
 import useStyles from './style'
 import userQuery from './query';
 import { useLazyQuery } from '@apollo/client';
 import { NextPage } from 'next';
+import SignInPassword from './SignInPassword'
+import authenticate from './../../utils/authenticate';
 
 
 const SignIn: NextPage =(): ReactElement=> {
-  const [imageLoading, setImageLoading] = useState<boolean>(true)
-  const [logoUrl, setLogoUrl] = useState<string>('')
-  const [titleUrl, setTitleUrl] = useState<string>('')
-  
+  const [loader, setLoader]=useState<boolean>(true)
   const [email, setEmail] = useState<string>('')
   const [full_name, setFull_name] = useState<string>('')
   const [first_name, setFirst_name] = useState<string>('')
   const [last_name, setLast_name] = useState<string>('')
   const [imageUrl, setImageUrl] = useState<string>('')
   const [token, setToken] = useState<string>('')
+  const [openPassword, setOpenPassword] = useState<boolean>(false)
   
   const classes = useStyles({})
   const router = useRouter()
+
+  useEffect(()=>{
+    const validateCurrUser=async()=>{
+      let res: boolean = await authenticate()
+      if(res) router.push('/shop')
+      else setLoader(false)
+    }
+    validateCurrUser()
+  },[])
 
   const user: User = { 
     email, 
@@ -48,8 +54,8 @@ const SignIn: NextPage =(): ReactElement=> {
     token
   }
 
-  const setCookies=(email: string, full_name: string, token: string): void =>{
-    const namesToken = { email, full_name, token }
+  const setCookies=(email: string, full_name: string, token: string, _id: string): void =>{
+    const namesToken = { email, full_name, token, _id }
     Cookies.set('currentUser', JSON.stringify(namesToken), { 
       expires:1,
       secure: true,
@@ -57,53 +63,39 @@ const SignIn: NextPage =(): ReactElement=> {
     })
   }
 
-  const [insertOneUser] = useMutation(mutation, {
+  const [insertOneUser] = useMutation(insertUserMutation, {
     variables: user,
     notifyOnNetworkStatusChange:true,
     awaitRefetchQueries: true,
     onCompleted: (e): void => {
-      const {email, full_name, token} = e?.user
-      setCookies(email, full_name, token)
+      const {email, full_name, token, _id} = e?.user
+      setCookies(email, full_name, token, _id)
       router.push('/verify')
     }
+  })
+
+  const [updateUser] = useMutation(updateUserMutation,{
+    notifyOnNetworkStatusChange:true
   })
 
   const [findOneUser] = useLazyQuery(userQuery,{
     fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
+    nextFetchPolicy: 'cache-first',
+    ssr: false,
     onCompleted:async(e):Promise<void> => {
       const userStatus: string = e?.user?.status
       if(!userStatus) await insertOneUser()
       else{
-        const {email, full_name, token} = e?.user
-        setCookies(email, full_name, token)
+        const { email, full_name, token, _id } = e?.user
+        setCookies(email, full_name, token, _id)
+        await updateUser({ variables: { email, deactivated: false }})
         if(userStatus === STATUS.UNVERIFIED || userStatus === STATUS.REJECTED) router.push('/verify')
         else if(userStatus === STATUS.VERIFIED || userStatus === STATUS.WAITING) router.push('/shop')
       }
-    },
-    onError:(e): void => {
-      console.log('Fail')
-      console.log(e)
     }
   })
 
-  const handleHomeAssets=async(): Promise<void> =>{
-    const getLogo = await axios({
-      url:getURI('/find-image-asset'),
-      method: 'POST',
-      data: { _id : new ObjectId('61e805737e05cb32e6ae7a58') }
-    })
-
-    const getTitle = await axios({
-      url: getURI('/find-image-asset'),
-      method: 'POST',
-      data: { _id : new ObjectId('61e8058a7e05cb32e6ae7a59') }
-    })
-    
-    setLogoUrl(getLogo?.data?.data)
-    setTitleUrl(getTitle?.data?.data)
-    setImageLoading(false);
-  }
 
   const responseGoogleSuccess=async(response):Promise<void>=>{
     const {email, name, familyName, givenName, imageUrl} = response.profileObj
@@ -118,37 +110,43 @@ const SignIn: NextPage =(): ReactElement=> {
     setToken(token)
     await findOneUser({variables : { email }})
   }
+  
   const responseGoogleFail=():void=>{}
-
-  useEffect(()=>{
-    handleHomeAssets()
-  },[])
 
   return (
     <>
-      {!imageLoading? (
-        <>
-          <Grid container className={classes.container}>
-            <Grid item xs={6}> 
-              {logoUrl && <img src={`data:image/png;base64,${logoUrl}`} alt="" draggable={false} className={classes.logo}/>}
-            </Grid>
-            <Grid item xs={6} className={classes.rightContainer}>
-              {titleUrl && <img src={`data:image/png;base64,${titleUrl}`} draggable={false} alt="" className={classes.title}/>}
-              <GoogleLogin
-                clientId={"804855284131-20pnrqf3s9c9teqm76dlk6n5lo88er73.apps.googleusercontent.com"}
-                render={renderProps => (
-                  <button onClick={renderProps.onClick} disabled={renderProps.disabled} className={classes.loginButton}>
-                    Sign In
-                  </button>
-                )}
-                onSuccess={responseGoogleSuccess}
-                onFailure={responseGoogleFail}
-                cookiePolicy={'single_host_origin'}
-              />
-            </Grid>
-          </Grid>
-        </>
-      ) : <h1>Loading ...</h1>}
+      {!loader && 
+      <>
+      <Grid container className={classes.container}>
+        <Grid item xs={6} className={classes.logoContainer}> 
+          <img src={'/assets/oble.webp'} alt="" draggable={false} className={classes.logo}/>
+        </Grid>
+        <Grid item xs={6} className={classes.rightContainer}>
+          <img src={'/assets/title.webp'} alt="" draggable={false} className={classes.title}/>
+          <GoogleLogin
+            clientId={"804855284131-20pnrqf3s9c9teqm76dlk6n5lo88er73.apps.googleusercontent.com"}
+            render={renderProps => (
+              <button onClick={renderProps.onClick} disabled={renderProps.disabled} className={classes.loginButton}>
+                <Typography variant="h6">Sign In</Typography>
+              </button>
+            )}
+            onSuccess={responseGoogleSuccess}
+            onFailure={responseGoogleFail}
+            cookiePolicy={'single_host_origin'}
+          />
+
+          <Box py={1}>
+          <Typography variant="subtitle2">
+            <Link href="#" color="textSecondary" onClick={()=>setOpenPassword(true)}>Sign in using password</Link>
+          </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+      <SignInPassword
+        openPassword={openPassword}
+        setOpenPassword={setOpenPassword}
+      />
+      </>}
     </>
   )
 }

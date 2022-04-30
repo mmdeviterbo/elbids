@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import queryString from 'query-string';
 import Autocomplete  from '@material-ui/lab/Autocomplete';
 import tagValues from '../../../utils/tagValues'
-import Link from '@material-ui/core/Link';
 
 const FilterSideBar=({
 }):ReactElement=>{
@@ -17,7 +16,7 @@ const FilterSideBar=({
   const queryMax_price = router.query.max_price as string
   const queryCategory = router.query.category as CATEGORY
   const queryDate_range = router.query.date_range as string
-  const queryTimer = router.query.timer as TIMER_OPTIONS 
+  const queryTimer = router.query.timer as TIMER_OPTIONS
   const querySearch = router.query.search as string
   const queryTags = router.query.tags as string
 

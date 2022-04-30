@@ -4,10 +4,14 @@ const userQuery = gql`
   query($email: String){
     user: findOneUser(email: $email){
       _id
-      status
+      email
       imageUrl
-      admin
       full_name
+      first_name
+      last_name
+      status
+      admin
+      banned
     }
   }   
 `

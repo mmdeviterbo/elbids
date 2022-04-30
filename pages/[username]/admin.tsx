@@ -1,10 +1,9 @@
 import React, { ReactElement } from 'react'
 import { NextPage } from 'next';
-import AdminVerify from '../../src/components/Admin';
+import Admin from '../../src/components/Admin';
 import layout from '../../src/components/_commons/layout';
 
-
-const VerifyAdmin: NextPage=(): ReactElement=>{
-  return <AdminVerify/>
+const AdminPage: NextPage=(): ReactElement=>{
+  return <Admin/>
 }
-export default layout(VerifyAdmin)
+export default layout(AdminPage)

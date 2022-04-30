@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-const mutation = gql`
+const insertUserMutation = gql`
 mutation (
   $email: String!
   $full_name: String! 
@@ -31,6 +31,7 @@ mutation (
     admin:$admin
     token:$token
     ){
+    _id
     email
     full_name
     first_name
@@ -43,4 +44,22 @@ mutation (
   }
 }
 `
-export default mutation
+
+const updateUserMutation=gql`
+  mutation(
+    $email: String
+    $deactivated: Boolean
+  ){
+    updateOneUser(
+      email: $email
+      deactivated: $deactivated
+    ){
+      _id
+    }
+  }
+`
+
+export {
+  insertUserMutation,
+  updateUserMutation
+}

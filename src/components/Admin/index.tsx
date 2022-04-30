@@ -1,101 +1,133 @@
-import React, {useState, useEffect, ReactElement} from 'react'
+import { ReactElement, useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import { useQuery } from '@apollo/client'
-import { userQuery, usersQuery } from './query';
-import { CookieArgs } from '../../types'
-import getUser from '../../utils/getUser'
-import { useRouter } from 'next/router';
-import { Container } from '@material-ui/core';
-import {User} from '../../types'
-import CardItem from './Card'
+import { Box, Container } from '@material-ui/core'
+import { Tabs, Tab } from '@material-ui/core';
 import useStyles from './style'
-import { useMutation } from '@apollo/client';
-import mutation from './mutation'
-import { STATUS } from '../../types'
-import { ObjectId } from 'bson';
+import userQuery from './query'
+import { useQuery } from '@apollo/client';
+import getUser from './../../utils/getUser';
+import { CookieArgs, User } from './../../types';
+import { useRouter } from 'next/router';
+import VerificationTab from './VerificationTab';
+import UsersTab from './UsersTab';
+import ReportsTab from './ReportsTab';
 
-const AdminVerify: NextPage=(): ReactElement=>{
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: any;
+  value: any;
+}
+
+enum PANEL_SIZE{
+  XS="xs",
+  SM="sm",
+  MD="md",
+  lg="lg",
+  xl="xl"
+}
+
+function TabPanel(props: TabPanelProps) {
   const classes = useStyles()
-  const user: CookieArgs = getUser()
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`vertical-tabpanel-${index}`}
+      aria-labelledby={`vertical-tab-${index}`}
+      className={classes.tabPanel}
+      {...other}
+    >
+      {value === index && (
+        <Container>
+          <Box p={4}>{children}</Box>
+        </Container>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: any) {
+  return {
+    id: `vertical-tab-${index}`,
+    'aria-controls': `vertical-tabpanel-${index}`,
+  };
+}
+
+const Administrator: NextPage = (): ReactElement=> {
+  const userCookie: CookieArgs = getUser()
+  
   const router = useRouter()
-  
-  const [users, setUsers] = useState<User[]>([])
+  const classes = useStyles()
+  const [value, setValue] = useState<number>(parseInt(localStorage.getItem('adminroles_index')  || "0"))
+  const [panelSize, setPanelSize]=useState<PANEL_SIZE>(PANEL_SIZE.MD)
+  const [user, setUser]=useState<User>()
 
-  const { data, loading } = useQuery(userQuery,{
-    variables: { email: user?.email},
-    skip: !user,
-    fetchPolicy: 'cache-and-network',
-    notifyOnNetworkStatusChange: true
-  })
-  
-  const usersState = useQuery(usersQuery,{
-    variables: { email: user?.email, status: STATUS.WAITING},
-    skip: !user,
-    fetchPolicy: 'cache-and-network',
+
+  const handleChange = (_ , newValue: number) => {
+    setValue(newValue);
+  };
+
+  const userState = useQuery(userQuery ,{
+    skip: !userCookie?._id,
+    variables: { _id : userCookie?._id },
     notifyOnNetworkStatusChange: true,
-    onCompleted:(e): void =>{
-      let tempUsers: User[] = e?.users.filter((tempUser: User)=>tempUser.email!==user?.email) 
-      setUsers(tempUsers)
-    },
-    onError:(): void =>{
-      router.reload()
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    ssr:false,
+    onCompleted:(e)=>{
+      if(!e?.findOneUser?.admin) router.push('/shop')
+      if(e?.findOneUser) setUser(e?.findOneUser)
     }
   })
 
-  const [updateOneUser] = useMutation(mutation, {
-    notifyOnNetworkStatusChange: true,
-    onError:(): void =>{
-      router.reload()
+  useEffect(()=>{
+    if(!value && value !== 0){
+      try{
+        let adminroles_index = localStorage.getItem('adminroles_index')  || "0"
+        setValue(parseInt(adminroles_index))
+      }catch(err){
+        setValue(0)
+      }
     }
-  })
+    if(value === 2) setPanelSize(PANEL_SIZE.lg)
+    else setPanelSize(PANEL_SIZE.MD)
+  },[value])
 
-  const handleVerificationButton=(email: string, status: STATUS): void =>{
-    let tempUsers: User[] = users.filter((user: User)=>user?.email!==email) 
-    setUsers(tempUsers)
-    updateOneUser({
-      variables: { email, status } 
-    })
-  }
-
-  const handleLoader=(): ReactElement=>{
-    return (
-    <>
-
-    </>)
-  }
-
-  if(!user) router.push('/signin')
 
   return(
-    <>
-      {loading && usersState?.loading && <h2>{'Loading ...'}</h2>}
-      {!loading && !data?.user?.admin && <h2>{'Unauthorized access'}</h2>}
-      {!loading && data?.user?.admin && !usersState?.loading && 
-        <Container className={classes.root}>
-          <>
-            { 
-              users?.map((user: User): ReactElement=>{
-                const {full_name, first_name, last_name, id, email, date_created, status, imageUrl, token} = user
-                return(
-                    <CardItem
-                      key={token}
-                      full_name={full_name} 
-                      first_name={first_name} 
-                      last_name={last_name}
-                      id={id}
-                      email={email}
-                      date_created={date_created}
-                      status={status}
-                      imageUrl={imageUrl}
-                      handleVerificationButton={handleVerificationButton}
-                    />
-                )
-              })
-            }
-          </>
-        </Container>
-      }
-    </>
+    <Container maxWidth={panelSize}>
+      <div className={classes.root}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value}
+          onChange={handleChange}
+          className={classes.tabs}
+        >
+          {/* verify status*/}
+          <Tab label={'Verification'} className={classes.tab} {...a11yProps(0)} /> 
+    
+          {/* additional of admins, ban accounts */}
+          <Tab label={'Users'}  className={classes.tab} {...a11yProps(1)} />
+          
+          {/* summary of reports */}
+          <Tab label={'Reports'}  className={classes.tab} {...a11yProps(2)} />
+        </Tabs>
+
+        <TabPanel value={value} index={0}>
+          <VerificationTab user={user}/>
+        </TabPanel>
+
+        <TabPanel value={value} index={1}>
+          <UsersTab user={user}/>
+        </TabPanel>
+
+        <TabPanel value={value} index={2}>
+          <ReportsTab user={user}/>
+        </TabPanel>
+      </div>
+    </Container>
   )
 }
-export default AdminVerify
+export default Administrator

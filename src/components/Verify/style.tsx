@@ -44,10 +44,17 @@ export default makeStyles((theme: Theme)=>({
     boxShadow:'1px 1px 4px black',
   },
   submit:{
-    background:red[900],
-    color:'white',
+    backgroundColor:theme.palette.common.white,
+    color:theme.palette.common.black,
+    borderRadius: 0,
+    boxShadow:'none',
+    border:'1px solid black',
     '&:hover':{
-      background:red[600],
+      backgroundColor:'rgba(245, 245, 245,0.95)',
+      boxShadow:'none',
+    },
+    "&:disabled":{
+      border:'rgba(240, 240, 240,0.95)',
     }
   },
   title:{

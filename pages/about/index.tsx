@@ -1,12 +1,9 @@
 import { ReactElement } from 'react'
 import layout from '../../src/components/_commons/layout'
-import Cookies from 'js-cookie'
+import AboutContacts from '../../src/components/About'
 
 const About = (): ReactElement=>{
-  return(
-  <>
-    <h1>About page</h1>
-  </>)
+  return <AboutContacts/>
 }
 export default layout(About)
 

@@ -1,12 +1,17 @@
 import { ReactElement, useEffect} from 'react';
 import { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router'
+import authenticate from './../src/utils/authenticate';
 
 
 const RootPage: NextPage = (): ReactElement=> {
   const router = useRouter()
   useEffect(()=>{
-    router.push('/shop')
+    const authenticateUser=async(): Promise<void>=>{
+      const isValid: boolean = await authenticate()
+      if(isValid && router.asPath==='/') router.push('/shop')
+    }
+    authenticateUser()
   },[])
   return null
 }

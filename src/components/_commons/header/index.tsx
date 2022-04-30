@@ -1,37 +1,32 @@
 import React, { ReactElement, useState, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu, Box, Divider } from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu, Box, Divider, Tooltip, Avatar } from '@material-ui/core';
+import { green, red, yellow } from '@material-ui/core/colors';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/PersonOutlineOutlined';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCartOutlined';
-import MailIcon from '@material-ui/icons/MailOutlineOutlined';
 import NotificationsIcon from '@material-ui/icons/NotificationsNoneOutlined';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import SettingsIcon from '@material-ui/icons/Settings';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
+import VerifiedUserIcon from '@material-ui/icons/CheckCircle';
 import RejectedUserIcon from '@material-ui/icons/Cancel';
 import UnverifiedUserIcon from '@material-ui/icons/NewReleases';
 import WaitingUserIcon from '@material-ui/icons/Autorenew';
-import useStyles from './style';
-import Tooltip from '@material-ui/core/Tooltip';
-import Cookies from 'js-cookie'
+import {CATEGORY, PostFilter, TIMER_OPTIONS, STATUS, CookieArgs } from '../../../types'
 import getUser from './../../../utils/getUser';
-import Avatar from '@material-ui/core/Avatar';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { CookieArgs } from '../../../types'
 import { useLazyQuery } from '@apollo/client'
 import userQuery from './query'
-import {STATUS} from '../../../types'
-import { green } from '@material-ui/core/colors';
-import { red } from '@material-ui/core/colors';
-import { yellow } from '@material-ui/core/colors';
-import FilterSideBarMobile from '../../Shop/FilterSideBarMobile'
-import {CATEGORY, PostFilter, TIMER_OPTIONS} from '../../../types'
+import Cookies from 'js-cookie'
+import useStyles from './style';
 import queryString from 'query-string';
-
+import ChatDrawer from '../../ChatDrawer'
+import BannedDialog from './BannedDialog'
+import RejectedDialog from './RejectedDialog'
+import NotificationIcon from './NotificationsIcon'
 
 const Header: NextPage=(): ReactElement=> {
   const user: CookieArgs = getUser()
@@ -49,7 +44,10 @@ const Header: NextPage=(): ReactElement=> {
   const [getUserState, {data}] = useLazyQuery(userQuery,{
     variables: { email: user?.email},
     fetchPolicy: 'cache-and-network',
-    notifyOnNetworkStatusChange: true
+    nextFetchPolicy:'cache-first',
+    notifyOnNetworkStatusChange: true,
+    pollInterval: 1000,
+
   })
 
   const statusTooltip=():string=>{
@@ -74,6 +72,13 @@ const Header: NextPage=(): ReactElement=> {
   useEffect((): void=>{
     user && getUserState()
   },[])
+
+
+  useEffect((): void=>{
+    if(data?.user && router.asPath!=='/verify' && (data?.user?.status===STATUS.UNVERIFIED || !data?.user?.status)){
+      router.push('/verify')
+    }
+  },[data])
 
   const [search, setSearch] = useState<string>('')
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null)
@@ -102,11 +107,11 @@ const Header: NextPage=(): ReactElement=> {
   const renderMobileMenu: ReactElement = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMobileMenuOpen}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       onClose={handleMobileMenuClose}
     >
       <MenuItem
@@ -117,23 +122,16 @@ const Header: NextPage=(): ReactElement=> {
           })
         }}
       >
-        <AccountCircle/>
+        <AccountCircle/>&nbsp;
         <p>Profile</p>
       </MenuItem>
-      <MenuItem
-        onClick={(): void =>{
 
-        }}
-      >
-        <NotificationsIcon/>
-        <p>Notification</p>
-      </MenuItem>
       <MenuItem
         onClick={(): void =>{
           router.push('/cart')
         }}
       >
-        <ShoppingCartIcon/>
+        <ShoppingCartIcon/>&nbsp;
         <p>Shopping Cart</p>
       </MenuItem>
 
@@ -144,18 +142,18 @@ const Header: NextPage=(): ReactElement=> {
             query:  {username : user.email.split("@")[0]}
           })
         }}>
-          <SupervisorAccountIcon fontSize="small" className={classes.icon}/>
+          <SupervisorAccountIcon fontSize="small"/>&nbsp;
           <p>Admin Roles</p>
         </MenuItem>
       }
 
       <MenuItem
-        onClick={(): void =>{
-          Cookies.remove('currentUser')
-          router.reload()
+        onClick={async(): Promise<void> =>{
+          await Cookies.remove('currentUser')
+          router.replace('/signin')
         }}
       >
-        <PowerSettingsNewIcon/>
+        <PowerSettingsNewIcon/>&nbsp;
         <p>Logout</p>
       </MenuItem>
     </Menu>
@@ -167,7 +165,8 @@ const Header: NextPage=(): ReactElement=> {
         <Toolbar>
             {/* title: Elbids */}
           <Typography variant="h6" color="textPrimary" onClick={()=>router.push('/shop')} className={classes.title}>ElBids</Typography>
-          <FilterSideBarMobile/>
+          
+          {/* <FilterSideBarMobile/> */}
 
           {/* search bar */}
           <div className={classes.search}>
@@ -204,27 +203,18 @@ const Header: NextPage=(): ReactElement=> {
 
           {/* desktop  view */}
           <div className={classes.sectionDesktop}>
-            <Tooltip title="Message">
-              <IconButton aria-label="messages" color="inherit">
-                <Badge badgeContent={9} color="secondary">
-                  <MailIcon className={classes.icon}/>
-                </Badge>
-              </IconButton>
-            </Tooltip>
+            <ChatDrawer
+              longButton={false}
+              isCreate={false}
+              isRead={true}
+              user={data?.user}
+            />
 
-            <Tooltip title="Notification">
-              <IconButton aria-label="notifications" color="inherit">
-                <Badge badgeContent={17} color="secondary">
-                  <NotificationsIcon className={classes.icon}/>
-                </Badge>
-              </IconButton>
-            </Tooltip>
+            <NotificationIcon user={data?.user}/>
             
             <Tooltip title="Cart">
               <IconButton aria-label="shopping cart" color="inherit" onClick={()=>router.push('/cart')}>
-                <Badge badgeContent={2} color="secondary">
-                  <ShoppingCartIcon className={classes.icon}/>
-                </Badge>
+                <ShoppingCartIcon/>
               </IconButton>
             </Tooltip>
 
@@ -237,10 +227,12 @@ const Header: NextPage=(): ReactElement=> {
                 onClick={handleClickLogout}
               >
                 <Badge color="secondary">
-                  <ArrowDropDownIcon fontSize="small" className={classes.icon}/>
+                  <ArrowDropDownIcon fontSize="small"/>
                 </Badge>
 
               </IconButton>
+              
+              {user && 
               <Menu
                 id="simple-menu"
                 anchorEl={anchorElLogout}
@@ -251,21 +243,17 @@ const Header: NextPage=(): ReactElement=> {
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
                 className={classes.menu}
+                disableScrollLock={true}
               >
                 {data && 
                 <Tooltip title={statusTooltip()} placement="left">
                 <MenuItem 
                   className={classes.menuProfile}
-                  onClick={(): void =>{
-                    setAnchorElLogout(null);
-                    router.push({
-                      pathname: "/[username]",
-                      query:  {username : user.email.split("@")[0]}
-                    })
-                  }
-                }>
+                >
                   <Avatar alt="display picture" src={data?.user?.imageUrl}/> 
-                  <Typography variant="body1" color="textPrimary">{data?.user?.full_name}</Typography>
+                  <Typography variant="body1" color="textPrimary">
+                    <span style={{textTransform:'capitalize'}}>{data?.user?.full_name}</span>
+                  </Typography>
                   <Box style={{display:'flex', alignItems:'center', justifyContent:'center', gap:4}}>
                     {handleStatusIcon()}
                     <Typography variant="caption" color="textSecondary">{data?.user?.status}</Typography>
@@ -278,9 +266,12 @@ const Header: NextPage=(): ReactElement=> {
 
                 <MenuItem onClick={()=>{
                   setAnchorElLogout(null);
-                  router.push('/setting')
+                  router.push({
+                    pathname: "/[username]",
+                    query:  {username : user.email.split("@")[0]}
+                  })
                 }}>
-                  <SettingsIcon fontSize="small" className={classes.icon}/>
+                  <SettingsIcon fontSize="small"/>
                   <Box ml={1}>
                     <Typography variant="body1">Settings</Typography>
                   </Box>
@@ -294,7 +285,7 @@ const Header: NextPage=(): ReactElement=> {
                       query:  {username : user.email.split("@")[0]}
                     })
                   }}>
-                    <SupervisorAccountIcon fontSize="small" className={classes.icon}/>
+                    <SupervisorAccountIcon fontSize="small"/>
                     <Box ml={1}>
                       <Typography variant="body1">Admin Roles</Typography>
                     </Box>
@@ -303,14 +294,14 @@ const Header: NextPage=(): ReactElement=> {
                 <MenuItem onClick={(): void =>{
                   setAnchorElLogout(null);
                   Cookies.set('currentUser')
-                  router.reload()
+                  router.push('/signin')
                 }}>
-                  <PowerSettingsNewIcon fontSize="small" className={classes.icon}/>
+                  <PowerSettingsNewIcon fontSize="small"/>
                   <Box ml={1}>
                     <Typography variant="body1">Logout</Typography>
                   </Box>
                 </MenuItem>
-              </Menu>
+              </Menu>}
               </>
             </Tooltip>
           </div>
@@ -331,6 +322,8 @@ const Header: NextPage=(): ReactElement=> {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
+      <BannedDialog open={data?.user?.banned}/>
+      <RejectedDialog open={data?.user?.status===STATUS.REJECTED? true : false}/>
     </div>
   );
 }

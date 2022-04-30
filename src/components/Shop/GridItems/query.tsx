@@ -19,7 +19,16 @@ const postsQuery = gql`
     ){
       _id
       seller_id
+			seller{
+				_id
+				full_name
+				first_name
+				last_name
+				admin
+				status
+			}
 			category
+			archived
       item{
         _id
 		    title
@@ -37,6 +46,14 @@ const postsQuery = gql`
 		    date_created
 		    date_updated
 				buyer_id
+				buyer{
+					_id
+					full_name
+					first_name
+					last_name
+					admin
+					status
+				}
 				date_first_bid
       }
     }
@@ -51,7 +68,7 @@ const userQuery = gql`
 			email: $email
 		){
 			_id
-			like_ids
+			favorite_ids
 			following_ids
 		}
 	}

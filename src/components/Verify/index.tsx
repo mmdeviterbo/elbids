@@ -13,10 +13,11 @@ import { useMutation, useQuery } from '@apollo/client';
 import getUser from '../../utils/getUser'
 import { STATUS } from '../../types'
 import useStyles from './style'
-import Notification from './../_commons/notification';
+import Notification from '../_commons/notification';
 import userQuery from './query'
 import { CookieArgs } from '../../types'
 import { ObjectId } from 'bson'
+import { SpinnerCircularFixed } from 'spinners-react';
 
 
 const VerifyAccount: NextPage =(): ReactElement=>{
@@ -27,7 +28,18 @@ const VerifyAccount: NextPage =(): ReactElement=>{
   const [termsOpen, setTermsOpen] = useState<boolean>(false)
   const [openError, setOpenError]=useState<boolean[]>([false,false])
   const [errorMessage, setErrorMessage]=useState<string>('')
+  const [loader, setLoader]=useState<boolean>(false)
   const classes = useStyles({})
+
+  let loadingSpinner: ReactElement = (
+    <SpinnerCircularFixed
+    size={18}
+    color={'#344345'}
+    thickness={90}
+    speed={250}
+    enabled={true}
+  />
+  )
 
   const {data, loading } = useQuery(userQuery,{
     variables: {email: user?.email},
@@ -42,10 +54,13 @@ const VerifyAccount: NextPage =(): ReactElement=>{
     }
   })
 
+
+  
+
   const [updateOneUser] = useMutation(mutation, {
     notifyOnNetworkStatusChange: true,
-  	onCompleted:(): void => {
-      router.push('/shop')
+  	onCompleted:(e): void => {
+      if(e?.updateOneUser?.status!==data?.updateOneUser?.status) router.push('/shop')
     },
 	  onError: (): void => {
       setErrorMessage('Error updating your status')
@@ -54,6 +69,7 @@ const VerifyAccount: NextPage =(): ReactElement=>{
   })
 
   const handleSubmit=async(): Promise<void>=>{
+    setLoader(true)
     const formData: FormData = new FormData()
     formData.append('file', imageID)
 
@@ -64,15 +80,16 @@ const VerifyAccount: NextPage =(): ReactElement=>{
     })
 
     const updateOneUserVariables = {
-      id: new ObjectId(saveImage?.data?.insertedId),
+      id: new ObjectId(saveImage?.data?._id),
       email: user?.email,
       status: STATUS.WAITING
     }
 
-    if(!saveImage?.data?.acknowledged){
+    if(!saveImage?.data?._id){
       setErrorMessage('Error uploading your ID')
       setOpenError([true,true])
     }else await updateOneUser({variables : updateOneUserVariables})
+    setLoader(false)
   }
 
   return(
@@ -82,7 +99,9 @@ const VerifyAccount: NextPage =(): ReactElement=>{
         <Paper elevation={1} className={classes.innerContainer}>
           <div>
             <Typography align="center" color="textSecondary" variant="body2">
-              <Link component="button" onClick={()=>setTermsOpen(true)}>Terms of Use</Link>
+              <Link component="button" onClick={()=>setTermsOpen(true)} color="textPrimary">
+                Terms of Use
+              </Link>
             </Typography> 
           </div>
           <div className={classes.imageHolder}>
@@ -103,17 +122,14 @@ const VerifyAccount: NextPage =(): ReactElement=>{
           <Divider/>
           <Grid container justifyContent='flex-end' spacing={1}>
             <Grid item>
-              <Button onClick={()=>router.push('/shop')}>Skip</Button>
-            </Grid>
-            <Grid item>
               <Button 
                 variant="contained" 
                 className={classes.submit} 
-                endIcon={<SendIcon/>}
+                endIcon={loader? loadingSpinner : <SendIcon/>}
                 onClick={handleSubmit}
-                disabled={imageID? false : true}
+                disabled={loader || !imageID}
                 >
-                  Verify
+                  Submit
               </Button>
             </Grid>
           </Grid>

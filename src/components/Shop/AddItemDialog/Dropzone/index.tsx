@@ -34,7 +34,7 @@ const Dropzone=({
     onDrop, 
     accept: 'image/jpeg,image/png',
     maxFiles: 4,
-    maxSize: 3000000
+    maxSize: 2000000
   })
 
   const setDragDrop=():ReactElement=>{
@@ -69,7 +69,7 @@ const Dropzone=({
     if(isGalleryChanged && fileRejections?.length>0){
       element = (
         <Typography variant="caption" align="left" style={{margin:8, color: 'red'}}>
-          Only at most 4 image file(s) with 4mb max file size is/are accepted
+          Only at most 4 image file(s) with 2mb max file size is/are accepted
         </Typography>)
     } 
     else if(isGalleryChanged && gallery?.length===0){

@@ -16,6 +16,7 @@ import userMutation from './mutation'
 import { CookieArgs } from './../../../types/index';
 import { ObjectId } from 'bson'
 import _ from 'lodash'
+import LoaderSpinner from '../../_commons/loaderSpinner'
 
 
 const GridItems=(): ReactElement=>{
@@ -43,6 +44,8 @@ const GridItems=(): ReactElement=>{
   const [findPosts,{ loading }] = useLazyQuery(postsQuery,{
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    ssr: false,
     onCompleted:(e): void=>{
       let resPosts: Post[] = e?.findManyPosts 
       setPosts(resPosts) 
@@ -50,10 +53,11 @@ const GridItems=(): ReactElement=>{
   })
 
   const [updateUser] = useMutation(userMutation,{ 
-    notifyOnNetworkStatusChange: true
+    notifyOnNetworkStatusChange: true,
+
   })
 
-  const likePostsState = useQuery(userQuery,{   //returns like_ids[] from User
+  const likePostsState = useQuery(userQuery,{   //returns favorite_ids[] and following_ids[] from User
     skip: !getUser()?.email,
     variables: { email : getUser()?.email },
     notifyOnNetworkStatusChange: true,
@@ -61,7 +65,7 @@ const GridItems=(): ReactElement=>{
   })
 
   useEffect(()=>{
-    let likeIds: ObjectId[] = likePostsState?.data?.findOneUser?.like_ids
+    let likeIds: ObjectId[] = likePostsState?.data?.findOneUser?.favorite_ids
     let followingIds: ObjectId[] = likePostsState?.data?.findOneUser?.following_ids
     likeIds && !_.isEqual(likeIds, likePosts) && setLikePosts([...likeIds])
     followingIds && !_.isEqual(followingIds, followingPosts) && setFollowingPosts([...followingIds])
@@ -97,35 +101,39 @@ const GridItems=(): ReactElement=>{
     sortByPosts(sortBy, posts, setPosts)
   },[sortBy])
 
-  const handleLikeButton=async(post: Post): Promise<void> =>{
-    if(likePosts?.includes(post?._id)){
+  const handleLikeButton=async(post: Post, isFavorite: boolean): Promise<void> =>{
+    if(!isFavorite){
       let tempLikePosts: ObjectId[] = likePosts?.filter((likePost: ObjectId)=>likePost.toString()!==post?._id.toString())
       setLikePosts(tempLikePosts)
     }else{
       setLikePosts([...likePosts, post?._id])
     }
     await updateUser({
-      variables: { email: user?.email, like_id : new ObjectId(post?._id)}
+      variables: { email: user?.email, favorite_id : new ObjectId(post?._id), isFavorite}
     })
     await likePostsState.refetch()
   }
 
-  const handleFollowingButton=async(post: Post): Promise<void> =>{
-    if(followingPosts?.includes(post?._id)){
+  const handleFollowingButton=async(post: Post, isFollow: boolean): Promise<void> =>{
+    if(!isFollow){
       let tempFollowingPosts: ObjectId[] = followingPosts?.filter((followingPost: ObjectId)=>followingPost.toString()!==post?._id.toString())
       setFollowingPosts(tempFollowingPosts)
     }else{
       setFollowingPosts([...followingPosts, post?._id])
     }
     await updateUser({
-      variables: { email: user?.email, following_id : new ObjectId(post?._id)}
+      variables: { email: user?.email, following_id : new ObjectId(post?._id), isFollow}
     })
     await likePostsState.refetch()
   }
 
+  const isExistArray=(arrIds: ObjectId[], itemId: ObjectId): boolean =>{
+    return arrIds.includes(itemId)
+  }
+
   return (
     <>
-      <Box flexGrow={1} display="flex" flexDirection={'column'}>
+      <Box flexGrow={1} display="flex" flexDirection={'column'} className={classes.root}>
         <Box display="flex" flexDirection="column" alignItems="flex-end" justifyContent="flex-end" mt={1}>
           <Typography variant="subtitle1" color="textPrimary">{'SORT BY'}</Typography>
           <div className={classes.containerSelect}>
@@ -154,6 +162,7 @@ const GridItems=(): ReactElement=>{
           </div>
         </Box>
 
+        <LoaderSpinner isVisible={loading}/>
         <Box display="flex" flexWrap="wrap" justifyContent="flex-start" alignItems="flex-start" p={2}>
           {!loading && posts && posts.map((post: Post): ReactElement=>{
             return(
@@ -162,19 +171,19 @@ const GridItems=(): ReactElement=>{
                   <Tooltip title="Notify about this item" placement="top">
                     <IconButton 
                       aria-label="toggle-theme"
-                      onClick={async(): Promise<void>=> await handleFollowingButton(post)}
+                      onClick={async(): Promise<void>=> await handleFollowingButton(post, !isExistArray(followingPosts, post?._id))}
                       style={{margin:1, padding:0}}
                     >
-                      {followingPosts.includes(post?._id)? <NotificationsActiveIcon/> : <NotificationsNoneOutlinedIcon/>}
+                      {isExistArray(followingPosts, post?._id)? <NotificationsActiveIcon/> : <NotificationsNoneOutlinedIcon/>}
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Add to favorites" placement="top">
                     <IconButton 
                       style={{margin:2, padding:0}}
                       aria-label="toggle-theme"
-                      onClick={async(): Promise<void>=> await handleLikeButton(post)}
+                      onClick={async(): Promise<void>=> await handleLikeButton(post, !isExistArray(likePosts, post?._id))}
                       >
-                      {likePosts.includes(post?._id)? <FavoriteIcon/> : <FavoriteBorderIcon/> }
+                      {isExistArray(likePosts, post?._id)? <FavoriteIcon/> : <FavoriteBorderIcon/> }
                     </IconButton>
                   </Tooltip>
                 </Box>}
@@ -189,7 +198,7 @@ const GridItems=(): ReactElement=>{
                     <img src={`data:image/png;base64,${post?.item?.gallery?.data[0]}`} draggable={false} alt="" className={classes.image}/>
                   </Box>
                   <Box mt={1}><Typography component={'span'} variant="body1" color="textSecondary" noWrap>{post.category}</Typography></Box>
-                  <Box><Typography variant="h6" color="textPrimary" noWrap><strong>{post?.item.title}</strong></Typography></Box>
+                  <Box><Typography variant="h6" color="textPrimary" noWrap><strong>{post?.item?.title?.toUpperCase()}</strong></Typography></Box>
                   <Typography variant="body1" color="textPrimary" component="span">{`₱${post?.item?.current_bid || post?.item?.starting_price}`}</Typography>
                   {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body1" color="textPrimary" component="span">{` (+${post.item.additional_bid})`}</Typography>}
                   {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body1" color="textSecondary">{post?.item.timer}</Typography>}

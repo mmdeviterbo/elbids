@@ -28,8 +28,7 @@ const Footer: NextPage =(): ReactElement=>{
   const classes = useStyles({})
   return(
     <div className={classes.footer}>
-      <Link href='/about'><Typography variant="subtitle1" className={classes.link}>About</Typography></Link>
-      <Link href='/contact'><Typography variant="subtitle1" className={classes.link}>Contact Us</Typography></Link>
+      <Link href='/about'><Typography variant="subtitle1" className={classes.link}>About &nbsp; Contacts</Typography></Link>
     </div>
   )
 }

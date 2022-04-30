@@ -36,34 +36,17 @@ const updateItemMutation=gql`
   }
 `
 
-const updateUserMutation = gql`
-  mutation(
-    $email: String
-    $following_id: ID
-  ){
-    updateOneUser(
-      email:$email
-      following_id:$following_id
-    ){
-      _id
-    }
-  }
-`
-
 const updatePostMutation = gql`
   mutation(
     $_id: ID
     $archived: Boolean
-    $deleted: Boolean
   ){
     updateOnePost(
       _id:$_id
       archived:$archived
-      deleted:$deleted
     ){
       _id
       archived
-      deleted
     }
   }
 `
@@ -83,7 +66,6 @@ const deletePostMutation = gql`
 
 export {
   updateItemMutation,
-  updateUserMutation,
   updatePostMutation,
   deletePostMutation
 }

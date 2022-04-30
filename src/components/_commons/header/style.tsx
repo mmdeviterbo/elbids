@@ -19,9 +19,6 @@ export default makeStyles((theme: Theme) =>
       flexGrow: 1,
       zIndex:99,
     },
-    icon:{
-      color:'black'
-    },
     menu:{
       '& div': {
         margin:5
@@ -34,13 +31,14 @@ export default makeStyles((theme: Theme) =>
       display:'flex',
       alignItems:'center',
       flexDirection:'column',
-      justifyContent:'center'
+      justifyContent:'center',
+      cursor:'default'
     },
     title: {
       display: 'inline',
       color:'black',
       cursor:'pointer',
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down('xs')]: {
         display: 'none',
       },
     },
@@ -79,13 +77,13 @@ export default makeStyles((theme: Theme) =>
     },
     sectionDesktop: {
       display: 'none',
-      [theme.breakpoints.up('md')]: {
+      [theme.breakpoints.up('sm')]: {
         display: 'flex',
       },
     },
     sectionMobile: {
       display: 'flex',
-      [theme.breakpoints.up('md')]: {
+      [theme.breakpoints.up('sm')]: {
         display: 'none',
       },
     }

@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import getUser from './getUser'
 import { CookieArgs } from './../types/index';
 
+//authenticate if signin using Google account
 const authenticate =async(): Promise<boolean>=>{
   let isValid: boolean = false
   try{

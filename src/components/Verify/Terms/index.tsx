@@ -26,8 +26,10 @@ const Terms=(
     </DialogTitle>
     
     <DialogContent dividers>
-      <Typography>Terms of Use</Typography>
-      <Typography>Terms of Use</Typography>
+      <Typography variant="body2">
+        
+
+      </Typography>
     </DialogContent>
 
     <DialogActions>

@@ -2,10 +2,9 @@ import { makeStyles, Theme } from '@material-ui/core/styles'
 
 export default makeStyles((theme: Theme)=>({
   root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
     display: 'flex',
-    height: '100vh',
+    backgroundColor: theme.palette.background.paper,
+    minHeight: '95vh'
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
@@ -13,5 +12,8 @@ export default makeStyles((theme: Theme)=>({
   },
   tab:{
     padding:theme.spacing(2),
+  },
+  tabPanel:{
+    flexGrow:1
   }
 }))

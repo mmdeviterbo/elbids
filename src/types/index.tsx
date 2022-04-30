@@ -37,10 +37,22 @@ export enum CATEGORY{
 }
 
 export enum CART_ACTIVITIES{
-  LIKES="LIKES",
-  FOLLOWING="FOLLOWING",
-  SOLD="SOLD",
+  MYPOST="MYPOST",
   BOUGHT="BOUGHT",
+  FOLLOWING="FOLLOWING",
+  FAVORITE="FAVORITE",
+}
+
+export enum NOTIFICATION_TYPE{
+  BOUGHT="BOUGHT",
+  SOLD="SOLD",
+  FOLLOWING="FOLLOWING"
+}
+
+export enum MESSAGE_REASON{
+  BUYER="BUYER",
+  SELLER="SELLER",
+  READ="READ"
 }
 
 export interface Gallery{
@@ -60,22 +72,29 @@ export interface User{
   status: STATUS
   token: string
   id?: ObjectId
+  id_image?: Gallery
   admin?:Boolean
   deactivated?: Boolean	  
   banned?: Boolean	      
   report_count?: Number
   notification_count?: Number
+  password?: string
 
   following_ids?: ObjectId[]
-  like_ids?: ObjectId[]
+  favorite_ids?: ObjectId[]
 }
 
 export interface UserDisplay{
   _id?: ObjectId
+  email?: string
+  first_name?:string
+  last_name?:string
   full_name?: string
   imageUrl?: string
   status?: STATUS
   admin?:Boolean
+  password?: string
+  id_image?:Gallery
 }
 
 export interface UserFindOneArgs{
@@ -89,7 +108,7 @@ export interface UserFindOneArgs{
   id?: ObjectId
   admin?:Boolean
   following_ids?: ObjectId[]
-  like_ids?: ObjectId[]
+  favorite_ids?: ObjectId[]
 }
 
 export interface UserFindManyArgs{
@@ -100,6 +119,7 @@ export interface UserFindManyArgs{
 }
 
 export interface UserUpdateArgs{
+  email?: string
   status?: STATUS
   deactivated?: Boolean	  
   banned?: Boolean	      
@@ -107,8 +127,11 @@ export interface UserUpdateArgs{
   notification_count?: Number
   id?: ObjectId
   admin?:Boolean
-  following_id: ObjectId
-  like_id: ObjectId
+  following_id?: ObjectId
+  favorite_id?: ObjectId
+  islike?: Boolean
+  isFollow?: Boolean
+  password?: string
 }
 
 export interface Item{
@@ -125,7 +148,8 @@ export interface Item{
   date_first_bid?: string
   date_latest_bid?: string
   buyer_id?: ObjectId
-  
+  buyer?: User
+
   gallery?: Gallery
   gallery_id: ObjectId
   tags: string[]
@@ -149,8 +173,10 @@ export interface ItemUpdateArgs{
 export interface Post{
   _id: ObjectId
   seller_id: ObjectId          //current user
+  seller?: User
   category: CATEGORY
   item: Item
+  item_id?: ObjectId
   deleted: Boolean
   archived: Boolean
 }
@@ -168,6 +194,13 @@ export interface PostFilter{
   tags?: string
   timer?: TIMER_OPTIONS
   date_range?: string	    
+  category?: CATEGORY
+}
+
+export interface SummaryReportArgs{
+  _id?: ObjectId
+  archived?: boolean
+  timer?: TIMER_OPTIONS
   category?: CATEGORY
 }
 
@@ -193,7 +226,78 @@ export interface PreviewGallery{
 }
 
 export interface CookieArgs{
+  _id: ObjectId
   email: string,
   full_name: string,
   token: string
+}
+
+export interface FindCartPostsArgs{
+  email: string
+  _id: ObjectId
+}
+
+export interface MessageType{         //list of messages between two people
+  _id?: ObjectId
+  conversation_id: ObjectId
+  user_id: ObjectId
+  user?: User
+  message: string
+  date_created?: string
+}
+
+export interface ConversationType{    //list of people
+  _id?: ObjectId
+  user_ids?: ObjectId[]
+  users?: User[]
+  message?: MessageType
+  date_created?: string
+  deleted?: boolean
+}
+
+export interface FindOneConversationArgs{  
+  _id?: ObjectId
+  user_ids?: ObjectId[]
+}
+
+export interface FindManyConversationArgs{ 
+  users_ids: ObjectId[]
+}
+
+export interface FindManyMessagesArgs{    
+  conversation_id?: ObjectId
+}
+
+export interface InsertOneMessageArgs{    
+  conversation_id: ObjectId
+  user_id: ObjectId
+  message: string
+}
+
+export interface InsertOneConversationArgs{    
+  _id: ObjectId
+  user_ids: ObjectId[]
+}
+
+export interface Notification{
+  _id?: ObjectId
+  post_id: ObjectId
+  post?: Post
+  user_id: ObjectId
+  read: boolean
+  type: string	
+  date_created: String
+}
+
+export interface InsertOneNotification{
+  post_id: ObjectId
+  user_id: ObjectId
+  read: boolean
+  type: string
+  date_created: string
+
+}
+
+export interface FindManyNotification{
+  user_id: ObjectId
 }

@@ -1,6 +1,9 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
 
 export default makeStyles((theme: Theme)=>({
+  root:{
+    minHeight:'95vh'
+  },
   cardItem:{
     width:'calc(170px + 2vw)',
     margin: theme.spacing(1),

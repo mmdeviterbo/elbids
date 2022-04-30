@@ -8,6 +8,7 @@ const userQuery = gql`
       email
       full_name
       token
+      password
     }
   }   
 `

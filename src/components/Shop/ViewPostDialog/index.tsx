@@ -1,8 +1,8 @@
 import React, { ReactElement, useEffect, useState, Dispatch, SetStateAction, MouseEvent } from 'react'
 import "react-image-gallery/styles/css/image-gallery.css";
-import { Post, DATE_FORMAT, ItemUpdateArgs, TIMER_OPTIONS, PreviewGallery } from '../../../types'
+import { Post, DATE_FORMAT, ItemUpdateArgs, TIMER_OPTIONS, PreviewGallery, UserDisplay } from '../../../types'
 import { Box, Typography } from '@material-ui/core'
-import { Grid, Button, Dialog, DialogTitle, DialogContent, Divider, Tooltip, Container } from '@material-ui/core';
+import { Grid, Button, Dialog, DialogTitle, DialogContent, Divider, Tooltip } from '@material-ui/core';
 import { Avatar, ListItem, ListItemText, ListItemAvatar, MenuItem, Menu } from '@material-ui/core';
 import {Table, TableBody, TableRow, TableCell } from '@material-ui/core';
 import ImageGallery from 'react-image-gallery';
@@ -11,13 +11,13 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import PersonIcon from '@material-ui/icons/Person';
 import TimerIcon from '@material-ui/icons/Timer';
 import useStyles from './style'
-import { updateItemMutation, updateUserMutation, updatePostMutation, deletePostMutation } from './mutation'
+import { updateItemMutation, updatePostMutation, deletePostMutation } from './mutation'
 import { userQuery, postQuery, buyerQuery } from './query' 
 import getUser from '../../../utils/getUser';
-import { ObjectId, Binary } from 'bson';
+import { ObjectId } from 'bson';
 import { formatPreviewGallery } from '../../../utils/formatGallery'
 import Countdown from 'countdown-js'
-import CommentSection from './CommentSection';
+import CommentSection from './CommentSectionDialog';
 import { useRouter } from 'next/router';
 import _ from 'lodash'
 import formatDate from '../../../utils/formatDate';
@@ -28,21 +28,23 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import NotificationsNoneOutlinedIcon from '@material-ui/icons/NotificationsNoneOutlined';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import ChatDrawer from '../../ChatDrawer';
+import {titleCase} from 'title-case'
 
 const ViewPostDialog=({
   postPreview,
-  open,
   likePosts,
   handleLikeButton,
   followingPosts,
   handleFollowingButton,
+  open = false,
   setOpen
 }:{
   postPreview?: Post
   likePosts?: ObjectId[]
-  handleLikeButton?: (post: Post)=>Promise<void>
+  handleLikeButton?: (post: Post, isLike: boolean)=>Promise<void>
   followingPosts?: ObjectId[]
-  handleFollowingButton?: (post: Post)=>Promise<void>
+  handleFollowingButton?: (post: Post, isFollow: boolean)=>Promise<void>
   open?: boolean
   setOpen?: Dispatch<SetStateAction<boolean>>
 }): ReactElement=>{
@@ -53,7 +55,6 @@ const ViewPostDialog=({
   const [isFinished, setIsFinished]= useState<boolean>(false)
 
   const [dateFirstBid, setDateFirstBid] = useState<string>(post?.item?.date_first_bid)
-  const [timerLength, setTimerLength]= useState<TIMER_OPTIONS>(post?.item?.timer) //15s, 12 hours, 1 day, 2 days, 5 days
   const [anchorElLogout, setAnchorElLogout] = useState<null | HTMLElement>(null);
 
   const handleClickLogout=(event: MouseEvent<HTMLButtonElement>): void =>{
@@ -72,12 +73,8 @@ const ViewPostDialog=({
     skip: !post,
     variables: { _id: new ObjectId(post?._id), deleted: false, archived: false },
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
     pollInterval: 500,
-    fetchPolicy: 'cache-and-network'
-  })
-
-  const [updateUser] = useMutation(updateUserMutation,{
-    notifyOnNetworkStatusChange: true,
   })
 
   const [deleteOnePost] = useMutation(deletePostMutation,{
@@ -90,36 +87,24 @@ const ViewPostDialog=({
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network'
   })
-  
-  const findBuyer = useQuery(buyerQuery,{   //finds who is the current buyer
-    skip: !post?.item?.buyer_id || !open,
-    variables: { _id : new ObjectId(post?.item?.buyer_id) },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 500
-  })
 
   const [updateItem] = useMutation(updateItemMutation,{
     notifyOnNetworkStatusChange: true,
     onCompleted:async():Promise<void>=>{
-      await updateUser({variables: {
-        email: getUser()?.email,
-        following_id: post?.item?._id
-      }})
+      await handleFollowingButton(post, true)
     }
   })
 
   const [updatePost] = useMutation(updatePostMutation,{
     notifyOnNetworkStatusChange: true,
     onCompleted:(): void=>{
-      router.reload()
+      // router.reload()
     }
   })
 
   useEffect((): void =>{
     setPost(postPreview)
     setDateFirstBid(postPreview?.item?.date_first_bid)
-    setTimerLength(postPreview?.item?.timer)
     setGallery(formatPreviewGallery(postPreview?.item?.gallery?.data))
   },[postPreview, open])
 
@@ -168,12 +153,33 @@ const ViewPostDialog=({
       else return `${days}days ${hours}hr ${minutes}m ${seconds}s`
     }else if(hours>=0) return `${hours}hr ${minutes}m ${seconds}s`
     else return `${minutes}m ${seconds}s`
-    
   }
 
-  if(!isFinished && isBidding(post) && isBidExist() && (days<0 || hours<0 || minutes<0 || seconds<0)){
-    updatePost({variables: { _id : new ObjectId(post?._id), archived: true }})
+  useEffect(()=>{
+    if(isFinished){
+      const updatePostFun=async(): Promise<void>=>{
+        await updatePost({variables: { _id : new ObjectId(post?._id), archived: true }})
+      }
+      updatePostFun()
+    }
+  },[isFinished])
+
+  if((days<0 || hours<0 || minutes<0 || seconds<0) && !isFinished && isBidding(post) && isBidExist() && !post?.archived){
     setIsFinished(true)
+  }
+
+  const isExistArray=(arrIds: ObjectId[], itemId: ObjectId): boolean =>{
+    return arrIds.includes(itemId)
+  }
+
+  let tempUser: UserDisplay
+  let tempOther: UserDisplay
+  if(post?.seller?._id === userState?.data?.findOneUser?._id){
+    tempUser = post?.seller
+    tempOther = post?.item?.buyer
+  }else{
+    tempUser = post?.item?.buyer
+    tempOther = post?.seller 
   }
 
   return(
@@ -181,7 +187,7 @@ const ViewPostDialog=({
       <Dialog
         fullWidth={true}
         maxWidth={'md'}
-        open={postPreview && post && open}
+        open={open}
         onClose={()=>setOpen(false)}
         aria-labelledby="max-width-dialog-title"
       >
@@ -192,32 +198,39 @@ const ViewPostDialog=({
                 <ListItem alignItems="center">
                   <ListItemAvatar><Avatar src={userState?.data?.findOneUser?.imageUrl} /></ListItemAvatar>
                   <ListItemText 
-                    primary={userState?.data?.findOneUser?.full_name}
+                    primary={titleCase(userState?.data?.findOneUser?.full_name?.toLowerCase() || '')}
                   />
                 </ListItem>
               </div>
+            }
+
+            {user_id.equals(seller_id) && 
+              <>
+                {!isBidExist() && 
+                  <IconButton 
+                    aria-label="close" 
+                    onClick={handleClickLogout}
+                  >
+                    <MoreHorizIcon fontSize="small"/>
+                  </IconButton>
+                }
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorElLogout}
+                  keepMounted
+                  open={Boolean(anchorElLogout)}
+                  onClose={handleCloseLogout}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
+                >
+                  <MenuItem onClick={async(): Promise<void> =>{
+                    await deleteOnePost({variables : { _id : new ObjectId(post?._id) }})
+                    router.reload()
+                  }}>Delete</MenuItem>
+                </Menu>
+              </>
               }
-              <IconButton 
-                aria-label="close" 
-                onClick={handleClickLogout}
-              >
-                <MoreHorizIcon fontSize="small"/>
-              </IconButton>
-              <Menu
-                id="simple-menu"
-                anchorEl={anchorElLogout}
-                keepMounted
-                open={Boolean(anchorElLogout)}
-                onClose={handleCloseLogout}
-                getContentAnchorEl={null}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-              >
-                <MenuItem onClick={async(): Promise<void> =>{
-                  await deleteOnePost({variables : { _id : new ObjectId(post?._id) }})
-                  router.reload()
-                }}>Delete</MenuItem>
-              </Menu>
 
               <IconButton 
                 aria-label="close" 
@@ -253,7 +266,7 @@ const ViewPostDialog=({
                     <Typography variant={'h5'} color="error" display="inline"><strong>{`PHP ${post?.item?.starting_price} `}</strong></Typography>
                     {isBidding(post) && 
                       <Tooltip title="Additional bid" placement="bottom-start">
-                        <Typography variant={'subtitle1'} display="inline">{`(+${post?.item?.additional_bid})`}</Typography>
+                        <Typography variant={'h5'} display="inline">{`(+${post?.item?.additional_bid})`}</Typography>
                       </Tooltip>}
                     <Box display="inline" ml={1}>
                       <Typography 
@@ -309,8 +322,8 @@ const ViewPostDialog=({
                             <Tooltip title="Top bidder" placement="left"><PersonIcon/></Tooltip>
                           </TableCell> 
                         <TableCell align="left">
-                          <Typography color="textSecondary" variant="body2" component="span">{findBuyer?.data?.findOneUser?.full_name || ''}</Typography>
-                          {findBuyer?.data?.findOneUser?._id === userState?.data?.findOneUser._id &&
+                          <Typography color="textSecondary" variant="body2" component="span">{post?.item?.buyer?.full_name && (titleCase(post?.item?.buyer?.full_name?.toLowerCase()) || '')}</Typography>
+                          {post?.item?.buyer?._id === userState?.data?.findOneUser._id &&
                             <Typography color="textPrimary" variant="body2" component="span">&nbsp;(YOU)</Typography>
                           }
                         </TableCell>
@@ -328,6 +341,8 @@ const ViewPostDialog=({
                     </TableBody>
                   </Table>
                 )}
+            {!post?.archived && 
+                <>
                 <Button
                   disabled={handleBidderButton()}
                   className={classes.button}
@@ -350,6 +365,9 @@ const ViewPostDialog=({
                       updateItemVariable.date_first_bid = new Date().toString()
                     }
                     await updateItem({variables: updateItemVariable})
+                    // if(current_bid === 0 ){
+                    //   router.reload()
+                    // }
                   }}
                   >
                   {isBidding(post)?
@@ -362,42 +380,75 @@ const ViewPostDialog=({
                 </Button>
                 <Box display="flex" flexDirection="row" gridGap={10}>
                   <Button
-                    disabled={handleBidderButton()}
+                    disabled={user_id.equals(seller_id)}
                     fullWidth
-                    className={followingPosts.includes(post?._id)? classes.unFollowingButton : classes.followingButton}
-                    onClick={async(): Promise<void>=> await handleFollowingButton(post)}
+                    className={isExistArray(followingPosts, post?._id)? classes.unFollowingButton : classes.followingButton}
+                    onClick={async(): Promise<void>=> await handleFollowingButton(post, !isExistArray(followingPosts, post?._id))}
                     >
-                    {followingPosts.includes(post?._id)? 
+                    {isExistArray(followingPosts, post?._id)? 
                       <><NotificationsActiveIcon/>&nbsp;Unfollow</>
                       : 
                       <><NotificationsNoneOutlinedIcon/>&nbsp;Follow</>}
                   </Button>
                   
                   <Button
-                    disabled={handleBidderButton()}
+                    disabled={user_id.equals(seller_id)}
                     fullWidth 
-                    className={likePosts.includes(post?._id)? classes.unLikeButton : classes.likeButton}
-                    onClick={async(): Promise<void>=> await handleLikeButton(post)}
+                    className={isExistArray(likePosts, post?._id)? classes.unLikeButton : classes.likeButton}
+                    onClick={async(): Promise<void>=> await handleLikeButton(post, !isExistArray(likePosts, post?._id))}
                   >
-                    {likePosts.includes(post?._id)? 
-                      <><FavoriteIcon/>&nbsp;Remove to favorites</>
+                    {isExistArray(likePosts, post?._id)? 
+                      <><FavoriteIcon/>&nbsp;Remove</>
                       : 
-                      <><FavoriteBorderIcon/>&nbsp;Add to favorites</>}
+                      <><FavoriteBorderIcon/>&nbsp;Favorite</>}
                   </Button>
                 </Box>
+              </>}
+
+              {post?.archived && (user_id?.equals(buyer_id) || user_id?.equals(seller_id))  &&
+                <Box mt={2}>
+                  <ChatDrawer
+                    longButton={true}
+                    isCreate={true}
+                    user={tempUser}
+                    other={tempOther}
+                  />
+                    <Typography align={'center'} display='block' color={'textSecondary'} variant={'caption'}>
+                      <>
+                        {user_id?.equals(buyer_id) && `Message the seller`}
+                        {user_id?.equals(seller_id) && `Message the buyer`}
+                      </>
+                    </Typography> 
+                </Box>
+              }
               </Box>
               </Grid>
           </Grid>
 
-          {userState?.data?.findOneUser && 
-            <CommentSection
-              open={open}
-              post_id={post?._id}
-              user_id={new ObjectId(userState?.data?.findOneUser?._id)}
-              full_name={userState?.data?.findOneUser?.full_name}
-              imageUrl={userState?.data?.findOneUser?.imageUrl}
-            />
+          {post?.archived && !user_id?.equals(buyer_id) && !user_id?.equals(seller_id) &&
+            <Box 
+              position="absolute"
+              height="100%"
+              width="100%"
+              top='0'
+              left='0'
+              display="flex"
+              alignItems="center" 
+              justifyContent="center"
+            >
+              <Typography align={'center'} color={'error'} variant={'h1'} className={classes.blinking}>
+                <strong>{`SOLD!`}</strong>
+              </Typography>            
+            </Box>
           }
+          <CommentSection
+            open={open}
+            post={post}
+            handleFollowingButton={handleFollowingButton}
+            user_id={new ObjectId(userState?.data?.findOneUser?._id)}
+            full_name={userState?.data?.findOneUser?.full_name}
+            imageUrl={userState?.data?.findOneUser?.imageUrl}
+          />
         </DialogContent>
       </Dialog>
     </>
