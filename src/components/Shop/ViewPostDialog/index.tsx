@@ -436,7 +436,7 @@ const ViewPostDialog=({
               alignItems="center" 
               justifyContent="center"
             >
-              <Typography align={'center'} color={'error'} variant={'h1'} className={classes.blinking}>
+              <Typography align={'center'} color={'error'} variant={'h1'}>
                 <strong>{`SOLD!`}</strong>
               </Typography>            
             </Box>
