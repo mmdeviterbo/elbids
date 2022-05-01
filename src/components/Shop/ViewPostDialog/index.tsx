@@ -322,7 +322,7 @@ const ViewPostDialog=({
                             <Tooltip title="Top bidder" placement="left"><PersonIcon/></Tooltip>
                           </TableCell> 
                         <TableCell align="left">
-                          <Typography color="textSecondary" variant="body2" component="span">{post?.item?.buyer?.full_name && (titleCase(post?.item?.buyer?.full_name?.toLowerCase()) || '')}</Typography>
+                          <Typography color="textSecondary" variant="body2" component="span">{post?.item?.buyer?.full_name && titleCase(post?.item?.buyer?.full_name?.toLowerCase() || "")}</Typography>
                           {post?.item?.buyer?._id === userState?.data?.findOneUser._id &&
                             <Typography color="textPrimary" variant="body2" component="span">&nbsp;(YOU)</Typography>
                           }

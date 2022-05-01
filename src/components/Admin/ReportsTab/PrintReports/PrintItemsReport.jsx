@@ -23,10 +23,10 @@ class PrintItemsReport extends Component{
       if(post?.archived){ //sold
         row = this.createData(
           post?._id,
-          titleCase(post?.item?.title.toLowerCase()),
-          titleCase(post?.category?.toLowerCase()),
-          titleCase(post?.seller?.full_name.toLowerCase()),
-          titleCase(post?.item?.buyer?.full_name.toLowerCase()),
+          titleCase(post?.item?.title?.toLowerCase() || ""),
+          titleCase(post?.category?.toLowerCase() || ""),
+          titleCase(post?.seller?.full_name?.toLowerCase() || ""),
+          titleCase(post?.item?.buyer?.full_name?.toLowerCase() || ""),
           `₱${post?.item?.starting_price} (+${post?.item?.additional_bid})`,
           post?.item?.current_bid,
           formatDate(post?.item?.date_latest_bid, DATE_FORMAT.DATE_WORD),
@@ -34,9 +34,9 @@ class PrintItemsReport extends Component{
       }else{
         row = this.createData(
           post?._id,
-          titleCase(post?.item?.title.toLowerCase()),
-          titleCase(post?.category?.toLowerCase()),
-          titleCase(post?.seller?.full_name.toLowerCase()),
+          titleCase(post?.item?.title?.toLowerCase() || ""),
+          titleCase(post?.category?.toLowerCase() || ""),
+          titleCase(post?.seller?.full_name?.toLowerCase() || ""),
           '-',
           `₱${post?.item?.starting_price} (+${post?.item?.additional_bid})`,
           '-',
@@ -47,10 +47,10 @@ class PrintItemsReport extends Component{
       if(post?.archived){
         row = this.createData(
           post?._id,
-          titleCase(post?.item?.title.toLowerCase()),
-          titleCase(post?.category?.toLowerCase()),
-          titleCase(post?.seller?.full_name.toLowerCase()),
-          titleCase(post?.item?.buyer?.full_name.toLowerCase()),
+          titleCase(post?.item?.title?.toLowerCase() || ""),
+          titleCase(post?.category?.toLowerCase() || ""),
+          titleCase(post?.seller?.full_name?.toLowerCase() || ""),
+          titleCase(post?.item?.buyer?.full_name?.toLowerCase() || ""),
           `₱${post?.item?.starting_price}`,
           '-',
           formatDate(post?.item?.date_first_bid, DATE_FORMAT.DATE_WORD),
@@ -58,9 +58,9 @@ class PrintItemsReport extends Component{
       }else{
         row = this.createData(
           post?._id,
-          titleCase(post?.item?.title.toLowerCase()),
-          titleCase(post?.category?.toLowerCase()),
-          titleCase(post?.seller?.full_name.toLowerCase()),
+          titleCase(post?.item?.title?.toLowerCase() || ""),
+          titleCase(post?.category?.toLowerCase() || ""),
+          titleCase(post?.seller?.full_name?.toLowerCase() || ""),
           '-',
           `₱${post?.item?.starting_price}`,
           '-',

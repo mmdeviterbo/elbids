@@ -71,7 +71,7 @@ const ReportsTab=({
     nextFetchPolicy:'cache-first',
     ssr:false,
     onCompleted:(e)=>{
-      let summaryPosts: Post[] = e.findSummaryReportPosts
+      let summaryPosts: Post[] = e?.findSummaryReportPosts
       if((summaryPosts && !posts) || !_.isEqual(summaryPosts, posts)) setPosts([...summaryPosts])
     }
   })

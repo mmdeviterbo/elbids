@@ -17,11 +17,11 @@ class PrintUsersReport extends Component{
     if(!this.state?.rows?.length){
       users?.forEach((user)=>tempRows.push(this.createData(
         user?._id,
-        titleCase(user?.last_name.toLowerCase()),
-        titleCase(user?.first_name.toLowerCase()),
+        titleCase(user?.last_name?.toLowerCase() || ""),
+        titleCase(user?.first_name?.toLowerCase() || ""),
         user?.email,
         user?.admin? 'Yes': 'No',
-        titleCase(user?.status.toLowerCase()),
+        titleCase(user?.status?.toLowerCase() || ""),
         formatDate(user?.date_created, DATE_FORMAT.DATE_WORD),
         user?.report_count,
       )))
@@ -46,8 +46,6 @@ class PrintUsersReport extends Component{
 
   render() {    
     const { rows } = this.state
-    const { classes } = this.props;
-
     return (
       <Table stickyHeader aria-label="sticky table" size="small">
         <TableHead>
@@ -66,7 +64,7 @@ class PrintUsersReport extends Component{
                 {this.columns?.map((column, index) => {
                   const value = row[column.id];
                   return (
-                    <TableCell key={column.id || index} align={column.align}>
+                    <TableCell key={column?.id || index} align={column.align}>
                       {column.format && typeof value === 'number' ? column.format(value) : value}
                     </TableCell>
                   );

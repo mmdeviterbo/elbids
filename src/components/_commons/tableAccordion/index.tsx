@@ -102,9 +102,9 @@ const TableAccordion=({
         >
           <ListItem alignItems="flex-start" style={{paddingTop:0, paddingBottom:0}}>
             <ListItemAvatar>
-              <Avatar alt={full_name} src={imageUrl} />
+              <Avatar alt={full_name || ""} src={imageUrl} />
             </ListItemAvatar>
-            <ListItemText primary={titleCase(full_name)} secondary={admin? 'Admin' : 'Member'}/>
+            <ListItemText primary={titleCase(full_name || "")} secondary={admin? 'Admin' : 'Member'}/>
           </ListItem>
         </AccordionSummary>
 
@@ -128,7 +128,7 @@ const TableAccordion=({
                     <Typography color="textSecondary">Name</Typography>
                   </TableCell>
                   <TableCell align="left">
-                    {admin? <Typography>{titleCase(full_name)}</Typography> : <Typography>{titleCase(full_name)}</Typography>}
+                    {admin? <Typography>{titleCase(full_name || "")}</Typography> : <Typography>{titleCase(full_name || "")}</Typography>}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -146,7 +146,7 @@ const TableAccordion=({
                   </TableCell>
 
                   <TableCell align="left">
-                    <Typography >{titleCase(status.toLowerCase())}</Typography>
+                    <Typography >{titleCase(status?.toLowerCase() || "")}</Typography>
                   </TableCell>
                 </TableRow>
 

@@ -94,7 +94,7 @@ const NotificationIcon=({
 
             {notif?.type === NOTIFICATION_TYPE.FOLLOWING &&
               <ListItemText
-                primary={<Typography variant="subtitle2">{`${titleCase(notif?.post?.item?.buyer?.first_name.toLowerCase())} placed a bid for ₱${notif?.current_bid || notif?.post?.item?.current_bid}`}</Typography>}
+                primary={<Typography variant="subtitle2">{`${titleCase(notif?.post?.item?.buyer?.first_name?.toLowerCase() || "")} placed a bid for ₱${notif?.current_bid || notif?.post?.item?.current_bid}`}</Typography>}
                 secondary={<Typography variant="subtitle2" color="textSecondary">{`${notif?.post?.item?.title}`}</Typography>}
             />}
           </ListItem>

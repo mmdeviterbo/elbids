@@ -48,10 +48,10 @@ const DisplayItemsReport=({
         if(post?.category === CATEGORY.BID){
           tempRows.push({
             id: post?._id.toString(),
-            title: titleCase(post?.item?.title.toLowerCase()),
-            category: titleCase(post?.category?.toLowerCase()),
-            seller: titleCase(post?.seller?.full_name.toLowerCase()),
-            buyer: post?.archived? titleCase(post?.item?.buyer?.full_name.toLowerCase()) : '-',
+            title: titleCase(post?.item?.title?.toLowerCase() || ""),
+            category: titleCase(post?.category?.toLowerCase() || ""),
+            seller: titleCase(post?.seller?.full_name?.toLowerCase() || ""),
+            buyer: post?.archived? titleCase(post?.item?.buyer?.full_name?.toLowerCase() || "") : '-',
             price: `₱${post?.item?.current_bid}`,
             date_latest_bid: post?.archived? formatDate(post?.item?.date_latest_bid,DATE_FORMAT.DATE_WORD) : '-'
           })
@@ -59,9 +59,9 @@ const DisplayItemsReport=({
           tempRows.push({
             id: post?._id.toString(),
             title: post?.item?.title,
-            category: titleCase(post?.category?.toLowerCase()),
-            seller: titleCase(post?.seller?.full_name.toLowerCase()),
-            buyer: post?.archived? titleCase(post?.item?.buyer?.full_name.toLowerCase()) : '-',
+            category: titleCase(post?.category?.toLowerCase() || ""),
+            seller: titleCase(post?.seller?.full_name?.toLowerCase() || ""),
+            buyer: post?.archived? titleCase(post?.item?.buyer?.full_name?.toLowerCase() || "") : '-',
             price: `₱${post?.item?.starting_price}`,
             date_latest_bid: post?.archived? formatDate(post?.item?.date_first_bid, DATE_FORMAT.DATE_WORD) : '-'
           })

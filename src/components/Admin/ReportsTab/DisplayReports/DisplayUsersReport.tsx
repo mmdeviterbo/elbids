@@ -46,10 +46,10 @@ const DisplayUsersReport=({
       users?.map((user: User, index: number)=>{
         <Fragment key={index}>
           {tempUsers.push({
-            full_name: titleCase(user?.full_name?.toLowerCase()),
+            full_name: titleCase(user?.full_name?.toLowerCase() || ""),
             email: user?.email,
             admin: user?.admin? 'Yes': 'No',
-            status: titleCase(user?.status?.toLowerCase()),
+            status: titleCase(user?.status?.toLowerCase() || ""),
             date_created: formatDate(user?.date_created, DATE_FORMAT.DATE_WORD),
             report_count: user?.report_count,
           })}
