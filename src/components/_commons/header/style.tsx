@@ -54,7 +54,7 @@ export default makeStyles((theme: Theme) =>
         display: 'none',
       },
       "&:hover":{
-        filter: "brightness(1.2)",
+        filter: "brightness(1.8)",
       }
     },
     search: {
