@@ -60,6 +60,7 @@ const CommentSection=({
             primary={
               <InputBase
                 fullWidth
+                margin='dense'
                 placeholder="Write your comment"
                 inputProps={{ 'aria-label': 'comment' }}
                 value={comment}

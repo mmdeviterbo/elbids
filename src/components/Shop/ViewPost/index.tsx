@@ -218,7 +218,7 @@ const ViewPost=(props): ReactElement=>{
 
   return(
     <>
-    {!post && <Box height="95vh" width="100vw">
+    {!post && <Box height="95vh" width="100%">
       <LoaderSpinner isVisible={!post}/>
     </Box>}
 

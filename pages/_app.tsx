@@ -31,8 +31,8 @@ function MyApp({ Component, pageProps }) {
     },
     typography: {
       fontFamily: [
-        'Trebuchet MS',
-        'Verdana'
+        'IBM Plex Sans',
+        'sans-serif'
       ].join(",")
     }
   });
