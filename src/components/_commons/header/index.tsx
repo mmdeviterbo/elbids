@@ -237,7 +237,7 @@ const Header: NextPage=(): ReactElement=> {
                 id="simple-menu"
                 anchorEl={anchorElLogout}
                 keepMounted
-                open={Boolean(anchorElLogout)}
+                open={data?.user && Boolean(anchorElLogout)}
                 onClose={handleCloseLogout}
                 getContentAnchorEl={null}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
