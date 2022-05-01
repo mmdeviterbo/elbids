@@ -290,7 +290,7 @@ const ViewPost=(props): ReactElement=>{
 
         <Grid item xs={6}>
           <Box p={1} pl={2}>
-            <Box>
+            <Box mb={1}>
               {!post?.archived && user_id.equals(seller_id) && isEdit?
                 <TextField
                   className={classes.textfield}
@@ -312,7 +312,7 @@ const ViewPost=(props): ReactElement=>{
 
             </Box>
 
-            <Box display={'flex'} justifyContent='space-between'pt={1}>
+            <Box display={'flex'} justifyContent='space-between'pt={1} mb={1}>
               <div>
                 <Typography variant={'h5'} color="error" display="inline"><strong>{`PHP ${post?.item?.starting_price} `}</strong></Typography>
                 {isBidding(post) && 

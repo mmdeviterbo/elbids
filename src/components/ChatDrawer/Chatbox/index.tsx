@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react';
+import { ReactElement, useState, useEffect, Fragment } from 'react';
 import {
   MainContainer, ChatContainer, ConversationHeader,
   MessageList, Message, MessageInput,
@@ -18,8 +18,8 @@ import useStyles from './style'
 import ReportDialog from './ReportDialog';
 
 const Chatbox=({
-    isCreate,
-    isRead,
+    isCreate=false,
+    isRead=false,
     user,
     other=null,
   }:{
@@ -39,9 +39,16 @@ const Chatbox=({
   
   const [openReport, setOpenReport] = useState<boolean>(false)
 
-  const [insertConversationMutation] = useMutation(insertOneConversationMutation,{
+  const [insertConversationMutation, {loading}] = useMutation(insertOneConversationMutation,{
     notifyOnNetworkStatusChange: true
   })
+
+  useEffect(()=>{
+    if(isRead && !isCreate && !activeConversation && conversations?.length>0){
+      setActiveConversation(conversations[0])
+    }
+  },[isCreate, isRead, activeConversation, conversations])
+
 
   const findManyConversationsState = useQuery(conversationsQuery,{
     skip: !user?._id,
@@ -57,14 +64,16 @@ const Chatbox=({
       }
       if(!activeConversation){
         if(isCreate && !isRead){
-          let tempActiveConversation: ConversationType = tempManyConversations.find((convo: ConversationType)=>convo?.user_ids?.includes(other?._id))
+          let tempActiveConversation: ConversationType = tempManyConversations?.find((convo: ConversationType)=>convo?.user_ids?.includes(other?._id))
           if(!tempActiveConversation){
             let newConversationId: ObjectId = new ObjectId()
             let insertConversationArgs: InsertOneConversationArgs = {
               _id: activeConversation?._id || newConversationId,
               user_ids: [new ObjectId(user?._id), new ObjectId(other?._id)],
             }
+            findManyConversationsState.stopPolling()
             await insertConversationMutation({ variables: { ...insertConversationArgs } })
+            findManyConversationsState.startPolling(500)
           }else setActiveConversation(tempActiveConversation)
         }
       }
@@ -148,12 +157,11 @@ const Chatbox=({
           <Avatar src={user?.imageUrl} name="Lilly" />
         </Conversation>
 
-        {conversations?.map((conversation: ConversationType)=>{
+        {conversations?.map((conversation: ConversationType, index: number)=>{
           let userOther: UserDisplay = conversation?.users[0]?._id !== user?._id? conversation?.users[0] : conversation?.users[1]
           return(
-            <>
+            <Fragment key={index}>
               {userOther && <Conversation
-                key={conversation._id.toString()}
                 name={<span style={{"textTransform":'capitalize'}}>{userOther?.full_name}</span>}
                 info=""
                 onClick={()=>setActiveConversation(conversation)}
@@ -163,7 +171,7 @@ const Chatbox=({
                   src={getOtherUser(conversation)?.imageUrl || imageUrlDefault}
                   name={getOtherUser(conversation)?.full_name} />
               </Conversation>}
-            </>
+            </Fragment>
           )})
         }
       </ConversationList>
@@ -182,9 +190,9 @@ const Chatbox=({
           </ConversationHeader>
           }
           <MessageList>
-            {messages?.map((message: MessageType): ReactElement =>{
+            {messages?.map((message: MessageType, index: number): ReactElement =>{
               return(
-                <>
+                <Fragment key={index}>
                   {message?.user?._id && 
                     <Message 
                       model={{
@@ -202,7 +210,7 @@ const Chatbox=({
                         />
                       }
                     </Message>}
-                  </>
+                </Fragment>
               )})
             }
           </MessageList>

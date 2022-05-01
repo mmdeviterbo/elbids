@@ -255,13 +255,13 @@ const ViewPostDialog=({
 
             <Grid item xs={6}>
               <Box p={1} pl={2}>
-                <Box>
+                <Box mb={1}>
                   <Tooltip title={post?.item?.title} placement={'top-start'}>
                     <Typography variant={'h3'} noWrap><strong>{post?.item?.title}</strong></Typography>
                   </Tooltip>
                 </Box>
 
-                <Box display={'flex'} justifyContent='space-between'pt={1}>
+                <Box display={'flex'} justifyContent='space-between'pt={1} mb={1}>
                   <div>
                     <Typography variant={'h5'} color="error" display="inline"><strong>{`PHP ${post?.item?.starting_price} `}</strong></Typography>
                     {isBidding(post) && 

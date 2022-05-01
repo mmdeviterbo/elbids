@@ -51,7 +51,7 @@ const ChatDrawer=({
       
       <SwipeableDrawer
         anchor={anchor}
-        open={state[anchor]}
+        open={(user && state[anchor]) || false}
         onClose={toggleDrawer(anchor, false)}
         onOpen={toggleDrawer(anchor, true)}
       >
