@@ -34,7 +34,7 @@ const CardCard=({
   return(
     <>
       <Divider/>
-      <Box mb={isClickable? 2 : 4}>
+      <Box mb={isClickable? 2 : 4} style={{overflow:"hidden"}}>
         <Box 
           bgcolor={'rgba(251,251,251, 0.9)'}
           display={'grid'}
