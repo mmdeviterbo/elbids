@@ -74,7 +74,6 @@ const Administrator: NextPage = (): ReactElement=> {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    ssr:false,
     onCompleted:(e)=>{
       if(!e?.findOneUser?.admin) router.push('/shop')
       if(e?.findOneUser) setUser(e?.findOneUser)

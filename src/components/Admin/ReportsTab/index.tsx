@@ -52,7 +52,6 @@ const ReportsTab=({
     variables: { email : user?.email },
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
-    ssr:false,
     onCompleted:(e)=>{
       let tempUsers: User[] = e?.findManyUsers
       if((tempUsers && !users) || !_.isEqual(tempUsers, users)) setUsers([...tempUsers])

@@ -28,7 +28,6 @@ const VerificationTab=({
     skip: !user || !user?.admin,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    ssr:false,
     notifyOnNetworkStatusChange: true,
     onCompleted:(e): void =>{
       let tempUsers: User[] = e?.users?.filter((tempUser: User)=>tempUser.email!==user?.email) 

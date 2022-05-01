@@ -31,7 +31,6 @@ const Settings: NextPage = (): ReactElement=> {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    ssr: false,
     onCompleted:(e)=>{
       setUser(e?.findOneUser)
     }

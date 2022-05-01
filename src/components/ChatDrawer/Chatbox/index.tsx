@@ -84,7 +84,6 @@ const Chatbox=({
     skip: !activeConversation?._id?.toString(),
     variables: { conversation_id: new ObjectId(activeConversation?._id) },
     notifyOnNetworkStatusChange: true,
-    ssr:false,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 500,
