@@ -41,6 +41,7 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <title>ElBids</title>
+        <link rel="shortcut icon" href="/assets/logo.ico" />
       </Head>
       <ApolloProvider client={client}>
         <ThemeProvider theme={themeApp}>

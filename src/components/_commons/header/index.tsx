@@ -173,7 +173,7 @@ const Header: NextPage=(): ReactElement=> {
             ElBids
           </Typography> */}
           <img 
-            src={'/assets/logo2.png'}
+            src={'/assets/logo.png'}
             alt="elbids logo"
             draggable={false}
             className={classes.logoImg}

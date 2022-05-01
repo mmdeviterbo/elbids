@@ -46,6 +46,7 @@ export default makeStyles((theme: Theme) =>
       cursor:'pointer',
       objectFit:"cover", 
       maxHeight:"6.5vh",
+      minHeight:"45px",
       filter: "brightness(1)",
       transition:"0.2s",
       [theme.breakpoints.down('xs')]: {
