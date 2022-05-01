@@ -27,7 +27,6 @@ const SignInPassword=({
 
   const setCookies=(email: string, full_name: string, token: string, _id: string): void =>{
     const namesToken = { email, full_name, token, _id }
-    console.log(namesToken)
     Cookies.set('currentUser', JSON.stringify(namesToken), { 
       expires:1,
       secure: true,

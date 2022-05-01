@@ -51,8 +51,6 @@ const UsersTab=({
   })
 
   const handleBanAccount=async(email: string, banned: boolean): Promise<void> =>{
-    console.log('Fun')
-    console.log(banned)
     let updateArgs: UserUpdateArgs = { email, banned }
     await updateOneUser({variables : { ...updateArgs }}) 
   }

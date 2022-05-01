@@ -52,11 +52,6 @@ const MyPostsTab=(
     }catch(err){}
   },[])
 
-  useEffect(()=>{
-    console.log('router.query.edit')
-    console.log(router.query.edit)
-  },[router.query])
-
   const [deleteOnePost] = useMutation(deletePostMutation,{
     notifyOnNetworkStatusChange: true,
   })

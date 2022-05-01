@@ -73,7 +73,6 @@ class PrintItemsReport extends Component{
 
   componentDidMount(){
     const { posts } = this.props
-    console.log(this.props.posts)
     let tempRows = []
     if(!this.state?.rows?.length){
       posts?.map((post)=>tempRows.push(this.handleItem(post)))
