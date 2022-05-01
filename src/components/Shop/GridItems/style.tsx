@@ -5,12 +5,12 @@ export default makeStyles((theme: Theme)=>({
     minHeight:'95vh'
   },
   cardItem:{
-    width:'calc(170px + 2vw)',
+    width:'calc(150px + 2vw)',
     margin: theme.spacing(1),
     cursor:'pointer',
   },
   imageContainer:{
-    height:'calc(170px + 2vw)',
+    height:'calc(150px + 2vw)',
     width:'100%',
   },
   image:{

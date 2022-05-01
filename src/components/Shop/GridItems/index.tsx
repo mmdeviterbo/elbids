@@ -45,7 +45,7 @@ const GridItems=(): ReactElement=>{
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    ssr: false,
+    returnPartialData:true,
     onCompleted:(e): void=>{
       let resPosts: Post[] = e?.findManyPosts 
       setPosts(resPosts) 
@@ -163,7 +163,7 @@ const GridItems=(): ReactElement=>{
         </Box>
 
         <LoaderSpinner isVisible={loading}/>
-        <Box display="flex" flexWrap="wrap" justifyContent="flex-start" alignItems="flex-start" p={2}>
+        <Box display="flex" flexWrap="wrap" justifyContent="flex-start" alignItems="flex-start" p={2} gridGap={4}>
           {!loading && posts && posts.map((post: Post): ReactElement=>{
             return(
               <Box position='relative' key={post?._id.toString()}>
@@ -197,12 +197,12 @@ const GridItems=(): ReactElement=>{
                   <Box className={classes.imageContainer}>
                     <img src={`data:image/png;base64,${post?.item?.gallery?.data[0]}`} draggable={false} alt="" className={classes.image}/>
                   </Box>
-                  <Box mt={1}><Typography component={'span'} variant="body1" color="textSecondary" noWrap>{post.category}</Typography></Box>
-                  <Box><Typography variant="h6" color="textPrimary" noWrap><strong>{post?.item?.title?.toUpperCase()}</strong></Typography></Box>
+                  <Box mt={1}><Typography component={'span'} variant="body2" color="textSecondary" noWrap>{post.category}</Typography></Box>
+                  <Box><Typography variant="subtitle1" color="textPrimary" noWrap><strong>{post?.item?.title?.toUpperCase()}</strong></Typography></Box>
                   <Typography variant="body1" color="textPrimary" component="span">{`₱${post?.item?.current_bid || post?.item?.starting_price}`}</Typography>
-                  {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body1" color="textPrimary" component="span">{` (+${post.item.additional_bid})`}</Typography>}
-                  {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body1" color="textSecondary">{post?.item.timer}</Typography>}
-                  {post?.item.timer===TIMER_OPTIONS.NA && <Typography variant="body1" color="textSecondary" noWrap>{'-'}</Typography>}
+                  {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body2" color="textPrimary" component="span">{` (+${post.item.additional_bid})`}</Typography>}
+                  {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body2" color="textSecondary">{post?.item.timer}</Typography>}
+                  {post?.item.timer===TIMER_OPTIONS.NA && <Typography variant="body2" color="textSecondary" noWrap>{' '}</Typography>}
                 </Box>
               </Box>
             )
