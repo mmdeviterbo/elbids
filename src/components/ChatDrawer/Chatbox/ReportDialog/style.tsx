@@ -4,7 +4,7 @@ export default makeStyles((theme: Theme)=>({
   submit:{
     backgroundColor: theme.palette.common.black,
     color:theme.palette.common.white,
-    border:'1px solid black',
+    border:'2px solid black',
     borderRadius:0,
     padding:theme.spacing(),
     paddingLeft:theme.spacing(1.5),

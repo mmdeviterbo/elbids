@@ -54,7 +54,7 @@ const Header: NextPage=(): ReactElement=> {
     const status: STATUS = data?.user?.status
     if(status === STATUS.WAITING) return "Your status is currently in reivew"
     else if(status === STATUS.UNVERIFIED) return "Submit your ID to verify"
-    else if(status === STATUS.VERIFIED) return "Verified user"
+    else if(status === STATUS.VERIFIED) return "Verified User"
     else return "Your status is rejected"
   }
   const handleStatusIcon=(): ReactElement=>{
