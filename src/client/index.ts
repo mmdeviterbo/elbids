@@ -3,6 +3,6 @@ import { getURI } from '../utils/getURI';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: "/graphql"
+  uri: getURI("/graphql")
 })
 export default client
