@@ -38,9 +38,22 @@ export default makeStyles((theme: Theme) =>
       display: 'inline',
       color:'black',
       cursor:'pointer',
+      [theme.breakpoints.down('sm')]: {
+        display: 'none',
+      },
+    },
+    logoImg:{
+      cursor:'pointer',
+      objectFit:"cover", 
+      maxHeight:"6.5vh",
+      filter: "brightness(1)",
+      transition:"0.2s",
       [theme.breakpoints.down('xs')]: {
         display: 'none',
       },
+      "&:hover":{
+        filter: "brightness(1.2)",
+      }
     },
     search: {
       position: 'relative',

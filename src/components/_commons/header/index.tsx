@@ -164,7 +164,21 @@ const Header: NextPage=(): ReactElement=> {
       <AppBar elevation={1} position="static" color="default" className={classes.appBar}>
         <Toolbar>
             {/* title: Elbids */}
-          <Typography variant="h6" color="textPrimary" onClick={()=>router.push('/shop')} className={classes.title}>ElBids</Typography>
+          {/* <Typography 
+            variant="h6"
+            color="textPrimary"
+            onClick={()=>router.push('/shop')}
+            className={classes.title}
+          >
+            ElBids
+          </Typography> */}
+          <img 
+            src={'/assets/logo2.png'}
+            alt="elbids logo"
+            draggable={false}
+            className={classes.logoImg}
+            onClick={()=>router.push('/shop')}
+          />
           
           {/* <FilterSideBarMobile/> */}
 

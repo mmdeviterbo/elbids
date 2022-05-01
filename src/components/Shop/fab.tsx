@@ -2,7 +2,7 @@ import React, {ReactElement} from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import PostAddIcon from '@material-ui/icons/PostAdd';
-
+import { red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,6 +26,7 @@ export default function FloatingActionButtonSize({
   return (
     <Fab 
       color="secondary" 
+      style={{backgroundColor: red[900]}}
       aria-label="add" 
       className={classes.fabButton}
       onClick={handleOpen}
