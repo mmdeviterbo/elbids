@@ -103,7 +103,7 @@ const ReportsTab=({
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ListItem>
               <GroupIcon fontSize="medium"/>&nbsp;&nbsp;
-              <ListItemText primary={<Typography variant="h6"><strong>{'Users'}</strong></Typography>}/>
+              <ListItemText primary={<Typography variant="body1"><strong>{'Users'}</strong></Typography>}/>
             </ListItem>
           </AccordionSummary>
           <AccordionDetails>
@@ -121,7 +121,7 @@ const ReportsTab=({
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ListItem>
               <ReceiptIcon fontSize="medium"/>&nbsp;&nbsp;
-              <ListItemText primary={<Typography variant="h6"><strong>{'Transactions'}</strong></Typography>}/>
+              <ListItemText primary={<Typography variant="body1"><strong>{'Transactions'}</strong></Typography>}/>
             </ListItem>
           </AccordionSummary>
           <AccordionDetails>
