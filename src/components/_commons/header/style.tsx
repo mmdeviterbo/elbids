@@ -45,7 +45,8 @@ export default makeStyles((theme: Theme) =>
     logoImg:{
       cursor:'pointer',
       objectFit:"cover", 
-      maxHeight:"6.5vh",
+      height:"6.5vh",
+      maxHeight:"55px",
       minHeight:"45px",
       filter: "brightness(1)",
       transition:"0.2s",
