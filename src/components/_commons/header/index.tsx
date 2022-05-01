@@ -110,7 +110,7 @@ const Header: NextPage=(): ReactElement=> {
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       id={mobileMenuId}
       keepMounted
-      open={isMobileMenuOpen}
+      open={isMobileMenuOpen || false}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       onClose={handleMobileMenuClose}
     >
@@ -237,7 +237,7 @@ const Header: NextPage=(): ReactElement=> {
                 id="simple-menu"
                 anchorEl={anchorElLogout}
                 keepMounted
-                open={data?.user && Boolean(anchorElLogout)}
+                open={(data?.user && Boolean(anchorElLogout)) || false}
                 onClose={handleCloseLogout}
                 getContentAnchorEl={null}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}

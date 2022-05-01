@@ -13,6 +13,7 @@ import DeactivateDialog from './DeactivateDialog'
 import CreatePasswordDialog from './CreatePasswordDialog'
 import formatDate from '../../utils/formatDate';
 import UpdatePasswordDialog from './UpdatePasswordDialog';
+import LoaderSpinner from '../_commons/loaderSpinner';
 
 const Settings: NextPage = (): ReactElement=> {
   const userCookie: CookieArgs = getUser()
@@ -42,6 +43,10 @@ const Settings: NextPage = (): ReactElement=> {
         <Typography variant="h4">Settings</Typography>
       </Box>
       
+      {!user && <Box width="100%" height="96vh">
+        <LoaderSpinner isVisible={!user}/>
+      </Box>}
+
       {user && 
         <Box display="flex" flexDirection="column"  justifyContent="space-between">
           <Box mb={2}>

@@ -68,7 +68,7 @@ const UsersTab=({
         </Typography>
       </Box>
       <LoaderSpinner isVisible={usersState?.loading}/>
-      {!usersState?.loading && users?.length===0 &&
+      {!usersState?.loading && users && users?.length===0 &&
         <Typography variant="subtitle1" align="center">
           <i>{'No users are currently registered!'}</i>
         </Typography>
