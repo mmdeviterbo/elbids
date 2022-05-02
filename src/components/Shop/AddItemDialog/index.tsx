@@ -7,7 +7,6 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import TimerIcon from '@material-ui/icons/Timer';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { ObjectId } from 'bson';
 import { useQuery, useMutation } from '@apollo/client';
 import axios from 'axios'
@@ -22,6 +21,7 @@ import Notification from '../../_commons/notification';
 import { useRouter } from 'next/router'
 import useStyles from './style'
 import getUser from './../../../utils/getUser';
+import { SpinnerCircularFixed } from 'spinners-react';
 
 const AddItemDialog: NextPage=():ReactElement=> {
   const userCookies = getUser()
@@ -176,6 +176,16 @@ const AddItemDialog: NextPage=():ReactElement=> {
     }
     return false
   }
+
+  let loadingSpinner: ReactElement = (
+    <SpinnerCircularFixed
+    size={18}
+    color={'#808080'}
+    thickness={90}
+    speed={250}
+    enabled={true}
+  />
+  )
 
   return (
     <>
@@ -362,7 +372,7 @@ const AddItemDialog: NextPage=():ReactElement=> {
             disabled={isFormInvalid || loadingImage || loading}
             onClick={handleSubmit}
             className={classes.submit}
-            startIcon={<CloudUploadIcon/>}
+            endIcon={loadingImage? loadingSpinner : null}
             >Upload</Button>
         </DialogActions>
       </Dialog>
