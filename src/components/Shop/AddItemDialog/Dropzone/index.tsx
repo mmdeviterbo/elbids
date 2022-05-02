@@ -24,7 +24,6 @@ const Dropzone=({
 }):ReactElement=>{
   const classes = useStyles({})
   
-  const [disabled, setDisabled]=useState<boolean>(false)
 
   const [tempFiles,setTempFiles]= useState<File[]>([])
 
