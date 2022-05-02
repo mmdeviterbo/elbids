@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState} from 'react';
 import { useRouter } from 'next/router';
-import { Box, Typography, Divider, Button, Tooltip, IconButton } from '@material-ui/core'
+import { Box, Typography, Tooltip } from '@material-ui/core'
 import useStyles from './style'
 import archivedQuery from './query'
 import { useQuery } from '@apollo/client';
@@ -48,7 +48,9 @@ const ArchivedTab= (
   return(
     <Box>
       <Box mb={4}>
-        <Typography variant={'h5'}><strong>Archived Items</strong></Typography>
+        <Tooltip title={"All transactions from all the users"} placement="right">
+          <Typography variant={'h5'}><strong>Archived Items</strong></Typography>
+        </Tooltip>
       </Box>
       <LoaderSpinner isVisible={archivedPostsState?.loading}/>
       {archivedPosts?.map((archivedPost: Post): ReactElement=>{
