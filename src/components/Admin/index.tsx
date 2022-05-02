@@ -75,7 +75,6 @@ const Administrator: NextPage = (): ReactElement=> {
     fetchPolicy: 'network-only',
     pollInterval: 500,
     onCompleted:(e)=>{
-      if(!e?.findOneUser?.admin) router.push('/shop')
       if(e?.findOneUser) setUser(e?.findOneUser)
     }
   })
