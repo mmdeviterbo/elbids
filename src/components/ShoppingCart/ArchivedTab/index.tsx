@@ -8,8 +8,6 @@ import {  UserDisplay, Post } from '../../../types';
 import LoaderSpinner from '../../_commons/loaderSpinner'
 import CardCard from '../../_commons/cartCard';
 import _ from 'lodash'
-import { titleCase } from 'title-case';
-
 
 const ArchivedTab= (
   {
@@ -29,7 +27,6 @@ const ArchivedTab= (
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    ssr: false,
   })
 
   useEffect(()=>{
