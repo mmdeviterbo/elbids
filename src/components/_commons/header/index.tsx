@@ -78,7 +78,6 @@ const Header: NextPage=(): ReactElement=> {
     if(data?.user && router.asPath!=='/verify' && (data?.user?.status===STATUS.UNVERIFIED || !data?.user?.status)){
       router.push('/verify')
     }
-    if(previousData?.user?.admin === false && data?.user?.admin === true) router.reload()
   },[data])
 
   const [search, setSearch] = useState<string>('')

@@ -72,9 +72,10 @@ const Administrator: NextPage = (): ReactElement=> {
     skip: !userCookie?._id,
     variables: { _id : userCookie?._id },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
     pollInterval: 500,
     onCompleted:(e)=>{
+      console.log(e?.findOneUser)
       if(e?.findOneUser?.email) setUser(e?.findOneUser)
     }
   })
