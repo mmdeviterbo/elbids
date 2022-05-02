@@ -72,8 +72,7 @@ const Administrator: NextPage = (): ReactElement=> {
     skip: !userCookie?._id,
     variables: { _id : userCookie?._id },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
+    fetchPolicy: 'network-only',
     pollInterval: 500,
     onCompleted:(e)=>{
       if(!e?.findOneUser?.admin) router.push('/shop')
