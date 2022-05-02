@@ -8,6 +8,7 @@ import useStyles from './style'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
 import PreviewGallery from '../PreviewGallery';
+import Compressor from 'compressorjs';
 
 const Dropzone=({
   gallery,
@@ -24,9 +25,26 @@ const Dropzone=({
   
   const [disabled, setDisabled]=useState<boolean>(false)
 
+  const [tempFiles,setTempFiles]= useState<File[]>([])
+
+  useEffect(()=>{
+    setGallery([...tempFiles])
+  }, [tempFiles])
+
   const onDrop = useCallback(async(acceptedFiles: File[])=> {
     !isGalleryChanged && setIsGalleryChanged(true)
-    setGallery(acceptedFiles)
+
+    let dupTempFile: File[] = [...tempFiles]
+    for(let i=0;i<acceptedFiles.length;i++){
+      new Compressor(acceptedFiles[i], {
+        quality: 0.3,
+        success: (compressedResult) => {
+          let tempFile: File = new File([compressedResult], `${i}.${compressedResult.type.split("image/")[1]}`)
+          dupTempFile.push(tempFile)
+          setTempFiles([...dupTempFile])
+        },
+      });
+    }
   }, [])
 
 
@@ -34,7 +52,7 @@ const Dropzone=({
     onDrop, 
     accept: 'image/jpeg,image/png',
     maxFiles: 4,
-    maxSize: 2000000
+    maxSize: 4000000
   })
 
   const setDragDrop=():ReactElement=>{
@@ -69,7 +87,7 @@ const Dropzone=({
     if(isGalleryChanged && fileRejections?.length>0){
       element = (
         <Typography variant="caption" align="left" style={{margin:8, color: 'red'}}>
-          Only at most 4 image file(s) with 2mb max file size is/are accepted
+          Only at most 4 image file(s) with 4mb max file size is/are accepted
         </Typography>)
     } 
     else if(isGalleryChanged && gallery?.length===0){
