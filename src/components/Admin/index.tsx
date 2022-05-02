@@ -99,8 +99,8 @@ const Administrator: NextPage = (): ReactElement=> {
 
   return(
     <Container maxWidth={panelSize}>
-      {user?.admin === false && <div style={{height:"95vh"}}></div>}
-      {user?.admin && <div className={classes.root}>
+      {(!user || user?.admin === false) && <div style={{height:"95vh"}}></div>}
+      {user?.admin === true && <div className={classes.root}>
         <Tabs
           orientation="vertical"
           variant="scrollable"

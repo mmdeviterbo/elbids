@@ -41,7 +41,7 @@ const Header: NextPage=(): ReactElement=> {
   const querySearch = router.query.search as string
   const queryTags = router.query.tags as string
 
-  const [getUserState, {data}] = useLazyQuery(userQuery,{
+  const [getUserState, {data, previousData}] = useLazyQuery(userQuery,{
     variables: { email: user?.email},
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy:'cache-first',
@@ -78,6 +78,7 @@ const Header: NextPage=(): ReactElement=> {
     if(data?.user && router.asPath!=='/verify' && (data?.user?.status===STATUS.UNVERIFIED || !data?.user?.status)){
       router.push('/verify')
     }
+    if(previousData?.user?.admin === false && data?.user?.admin === true) router.reload()
   },[data])
 
   const [search, setSearch] = useState<string>('')
