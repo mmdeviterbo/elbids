@@ -80,6 +80,10 @@ const Administrator: NextPage = (): ReactElement=> {
   })
 
   useEffect(()=>{
+    if(user?.admin === false) router.push('/shop')
+  },[user])
+
+  useEffect(()=>{
     if(!value && value !== 0){
       try{
         let adminroles_index = localStorage.getItem('adminroles_index')  || "0"
