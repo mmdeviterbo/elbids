@@ -93,7 +93,8 @@ const Administrator: NextPage = (): ReactElement=> {
 
   return(
     <Container maxWidth={panelSize}>
-      <div className={classes.root}>
+      {userState?.data?.findOneUser?.admin === false && <div style={{height:"95vh"}}></div>}
+      {userState?.data?.findOneUser?.admin && <div className={classes.root}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -122,7 +123,7 @@ const Administrator: NextPage = (): ReactElement=> {
         <TabPanel value={value} index={2}>
           <ReportsTab user={userState?.data?.findOneUser}/>
         </TabPanel>
-      </div>
+      </div>}
     </Container>
   )
 }
