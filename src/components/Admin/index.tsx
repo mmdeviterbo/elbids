@@ -74,6 +74,7 @@ const Administrator: NextPage = (): ReactElement=> {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
+    pollInterval: 500,
     onCompleted:(e)=>{
       if(!e?.findOneUser?.admin) router.push('/shop')
       if(e?.findOneUser) setUser(e?.findOneUser)
@@ -96,7 +97,8 @@ const Administrator: NextPage = (): ReactElement=> {
 
   return(
     <Container maxWidth={panelSize}>
-      <div className={classes.root}>
+      {!user?.admin && <div style={{height:"95vh"}}></div>}
+      {user?.admin && <div className={classes.root}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -125,7 +127,7 @@ const Administrator: NextPage = (): ReactElement=> {
         <TabPanel value={value} index={2}>
           <ReportsTab user={user}/>
         </TabPanel>
-      </div>
+      </div>}
     </Container>
   )
 }

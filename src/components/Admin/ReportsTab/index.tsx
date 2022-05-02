@@ -17,6 +17,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import { ListItemText, ListItem }from '@material-ui/core';
+import { useRouter } from 'next/router';
 
 const ReportsTab=({
   user
@@ -26,6 +27,11 @@ const ReportsTab=({
   const classes=useStyles()
   const componentRefUsers = useRef()
   const componentRefItems = useRef()
+  const router = useRouter()
+
+  useEffect(()=>{
+    if(user?.admin === false) router.push('/shop')
+  },[user])
 
   const pageStyle = `
     @media print {
@@ -58,6 +64,7 @@ const ReportsTab=({
     }
   })
 
+
   const [posts,  setPosts] = useState<Post[]>()
   const [archived,  setArchived] = useState<boolean>()
   const [category,  setCategory] = useState<CATEGORY>()
@@ -68,7 +75,6 @@ const ReportsTab=({
     variables: { _id : user?._id },
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
-    ssr:false,
     onCompleted:(e)=>{
       let summaryPosts: Post[] = e?.findSummaryReportPosts
       if((summaryPosts && !posts) || !_.isEqual(summaryPosts, posts)) setPosts([...summaryPosts])

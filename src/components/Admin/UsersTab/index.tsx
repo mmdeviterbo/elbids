@@ -20,7 +20,7 @@ const UsersTab=({
   const [users, setUsers] = useState<User[]>([])
 
   useEffect(()=>{
-    if(user && !user?.admin) router.push('/shop')
+    if(user?.admin === false) router.push('/shop')
   },[user])
 
   const usersState = useQuery(usersQuery,{
