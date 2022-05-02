@@ -48,7 +48,7 @@ export default makeStyles((theme: Theme)=>({
     color:theme.palette.common.black,
     borderRadius: 0,
     boxShadow:'none',
-    border:'1px solid black',
+    border:'2px solid black',
     '&:hover':{
       backgroundColor:'rgba(245, 245, 245,0.95)',
       boxShadow:'none',

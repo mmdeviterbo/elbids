@@ -18,6 +18,7 @@ import userQuery from './query'
 import { CookieArgs } from '../../types'
 import { ObjectId } from 'bson'
 import { SpinnerCircularFixed } from 'spinners-react';
+import Compressor from 'compressorjs';
 
 
 const VerifyAccount: NextPage =(): ReactElement=>{
@@ -112,8 +113,15 @@ const VerifyAccount: NextPage =(): ReactElement=>{
             className={classes.input}
             id="contained-button-file"
             type="file"
-            onChange={(e: ChangeEvent<HTMLInputElement>)=>setImageID(e.target.files[0])}
-          />
+            onChange={(e: ChangeEvent<HTMLInputElement>)=>{
+              new Compressor(e.target.files[0], {
+                quality: 0.1,
+                success: (compressedResult) => {
+                  let tempFile: File = new File([compressedResult], `0.${compressedResult.type.split("image/")[1]}`)
+                  setImageID(tempFile)
+                },
+              });
+            }}/>
 
           <label htmlFor="contained-button-file" style={{display:'grid', placeItems:'center', marginBottom:'5px'}}>
             {!imageID && <Typography align="center" color="textSecondary" variant="body1" paragraph>Upload your UP ID here </Typography>}
