@@ -174,7 +174,7 @@ const ViewPostDialog=({
 
   let tempUser: UserDisplay
   let tempOther: UserDisplay
-  if(post?.seller?._id === userState?.data?.findOneUser?._id){
+  if(post?.seller_id === userState?.data?.findOneUser?._id){
     tempUser = post?.seller
     tempOther = post?.item?.buyer
   }else{

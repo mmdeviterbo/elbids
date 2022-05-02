@@ -196,7 +196,7 @@ const Chatbox=({
                     <Message 
                       model={{
                         message: message?.message,
-                        sender: message?.user?.first_name,
+                        sender: message?.user?.full_name,
                         direction: message?.user?._id===user?._id? "outgoing" : "incoming",
                         position:"single"
                       }}

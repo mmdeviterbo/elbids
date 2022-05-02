@@ -22,8 +22,6 @@ const postsQuery = gql`
 			seller{
 				_id
 				full_name
-				first_name
-				last_name
 				admin
 				status
 			}
@@ -38,19 +36,14 @@ const postsQuery = gql`
 				current_bid
 		    starting_price
 		    additional_bid
-		    gallery_id
 				gallery{
 					data
 				}
-		    tags
 		    date_created
-		    date_updated
 				buyer_id
 				buyer{
 					_id
 					full_name
-					first_name
-					last_name
 					admin
 					status
 				}
