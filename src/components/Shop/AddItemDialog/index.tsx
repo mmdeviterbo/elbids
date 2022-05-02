@@ -22,6 +22,7 @@ import { useRouter } from 'next/router'
 import useStyles from './style'
 import getUser from './../../../utils/getUser';
 import { SpinnerCircularFixed } from 'spinners-react';
+import SendIcon from '@material-ui/icons/Send'
 
 const AddItemDialog: NextPage=():ReactElement=> {
   const userCookies = getUser()
@@ -372,7 +373,7 @@ const AddItemDialog: NextPage=():ReactElement=> {
             disabled={isFormInvalid || loadingImage || loading}
             onClick={handleSubmit}
             className={classes.submit}
-            endIcon={loadingImage? loadingSpinner : null}
+            endIcon={loadingImage? loadingSpinner : <SendIcon/>}
             >Upload</Button>
         </DialogActions>
       </Dialog>
