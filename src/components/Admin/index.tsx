@@ -61,8 +61,6 @@ const Administrator: NextPage = (): ReactElement=> {
   const classes = useStyles()
   const [value, setValue] = useState<number>(parseInt(localStorage.getItem('adminroles_index')  || "0"))
   const [panelSize, setPanelSize]=useState<PANEL_SIZE>(PANEL_SIZE.MD)
-  const [user, setUser]=useState<User>()
-
 
   const handleChange = (_ , newValue: number) => {
     setValue(newValue);
@@ -73,16 +71,12 @@ const Administrator: NextPage = (): ReactElement=> {
     variables: { _id : userCookie?._id },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
-    pollInterval: 500,
+    nextFetchPolicy: 'cache-first',
+    pollInterval: 1000,
     onCompleted:(e)=>{
-      console.log(e?.findOneUser)
-      if(e?.findOneUser?.email) setUser(e?.findOneUser)
+      if(e?.findOneUser?.admin === false) router.push('/shop')
     }
   })
-
-  useEffect(()=>{
-    if(user?.admin === false) router.push('/shop')
-  },[user])
 
   useEffect(()=>{
     if(!value && value !== 0){
@@ -97,11 +91,9 @@ const Administrator: NextPage = (): ReactElement=> {
     else setPanelSize(PANEL_SIZE.MD)
   },[value])
 
-
   return(
     <Container maxWidth={panelSize}>
-      {(!user || user?.admin === false) && <div style={{height:"95vh"}}></div>}
-      {user?.admin === true && <div className={classes.root}>
+      <div className={classes.root}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -120,17 +112,17 @@ const Administrator: NextPage = (): ReactElement=> {
         </Tabs>
 
         <TabPanel value={value} index={0}>
-          <VerificationTab user={user}/>
+          <VerificationTab user={userState?.data?.findOneUser}/>
         </TabPanel>
 
         <TabPanel value={value} index={1}>
-          <UsersTab user={user}/>
+          <UsersTab user={userState?.data?.findOneUser}/>
         </TabPanel>
 
         <TabPanel value={value} index={2}>
-          <ReportsTab user={user}/>
+          <ReportsTab user={userState?.data?.findOneUser}/>
         </TabPanel>
-      </div>}
+      </div>
     </Container>
   )
 }
