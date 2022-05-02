@@ -55,7 +55,7 @@ const PreviewGallery=({
                 <IconButton 
                   component="span"
                   aria-label="add"
-                  color="primary"
+                  color="inherit"
                   >
                   <AddAPhotoIcon />
                 </IconButton>
@@ -65,7 +65,7 @@ const PreviewGallery=({
         {gallery?.length>0 &&
             <Button
               aria-label="delete"
-              color="secondary"
+              color="inherit"
               onClick={()=>setGallery(null)}
               >
               <DeleteIcon />

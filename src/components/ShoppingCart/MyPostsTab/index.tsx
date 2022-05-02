@@ -28,6 +28,8 @@ const MyPostsTab=(
   const [myPosts, setMyPosts]=useState<Post[]>()
   const [anchorElLogout, setAnchorElLogout] = useState<null | HTMLElement>(null);
 
+  const [selectedPostId, setSelectedPostId]=useState<ObjectId>()
+
   const myPostsState = useQuery(myPostsQuery,{
     skip: !findMyPostsArgs?._id || !findMyPostsArgs?.email,
     variables: { ... findMyPostsArgs },
@@ -56,9 +58,6 @@ const MyPostsTab=(
     notifyOnNetworkStatusChange: true,
   })
 
-  const handleClickLogout=(event: MouseEvent<HTMLButtonElement>): void =>{
-    setAnchorElLogout(event.currentTarget);
-  }
 
   const handleCloseLogout = (): void => {
     setAnchorElLogout(null);
@@ -69,15 +68,17 @@ const MyPostsTab=(
     <>
       <Box position={'absolute'} right={0}>
         <IconButton 
-        aria-label="close" 
-        onClick={handleClickLogout}
+          aria-label="close" 
+          onClick={(e): void =>{
+            setSelectedPostId(new ObjectId(post?._id))
+            setAnchorElLogout(e.currentTarget);
+          }}
         >
           <MoreHorizIcon fontSize="small"/>
         </IconButton>
         <Menu
           id="simple-menu"
           anchorEl={anchorElLogout}
-          keepMounted
           style={{boxShadow:'none'}}
           open={Boolean(anchorElLogout)}
           onClose={handleCloseLogout}
@@ -90,7 +91,7 @@ const MyPostsTab=(
             style={{boxShadow:'none'}}
             onClick={async(): Promise<void> =>{
             setAnchorElLogout(null);
-            await deleteOnePost({variables : { _id : new ObjectId(post?._id) }})
+            await deleteOnePost({variables : { _id : selectedPostId }})
             await myPostsState.refetch()
           }}>Delete</MenuItem>
         </Menu>
@@ -143,7 +144,7 @@ const MyPostsTab=(
         </Button>
       </Box>
   )}
-
+  
   return(
     <Box>
       <Box mb={4}>
