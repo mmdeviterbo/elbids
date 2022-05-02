@@ -75,7 +75,7 @@ const Administrator: NextPage = (): ReactElement=> {
     fetchPolicy: 'network-only',
     pollInterval: 500,
     onCompleted:(e)=>{
-      if(e?.findOneUser) setUser(e?.findOneUser)
+      if(e?.findOneUser?.email) setUser(e?.findOneUser)
     }
   })
 
