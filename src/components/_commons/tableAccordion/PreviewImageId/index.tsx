@@ -20,11 +20,11 @@ const PreviewIdImage=(
       onClose={()=>setOpenPreviewImage(!openPreviewImage)}
       aria-labelledby="max-width-dialog-title"
     >
-    <DialogContent style={{padding: '20px'}}>
+    <DialogContent style={{padding: '15px'}}>
         <img
           src={`data:image/png;base64,${data[0]}`}
           draggable={false}
-          style={{'objectFit':'cover', height:'400px'}}
+          style={{'objectFit':'cover', height:'250px'}}
         />
     </DialogContent>
     <DialogActions>

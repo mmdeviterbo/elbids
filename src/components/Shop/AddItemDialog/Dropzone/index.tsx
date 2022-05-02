@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
 import PreviewGallery from '../PreviewGallery';
 import Compressor from 'compressorjs';
+import convert from 'image-file-resize';
 
 const Dropzone=({
   gallery,
@@ -36,14 +37,33 @@ const Dropzone=({
 
     let dupTempFile: File[] = [...tempFiles]
     for(let i=0;i<acceptedFiles.length;i++){
-      new Compressor(acceptedFiles[i], {
-        quality: 0.3,
-        success: (compressedResult) => {
-          let tempFile: File = new File([compressedResult], `${i}.${compressedResult.type.split("image/")[1]}`)
-          dupTempFile.push(tempFile)
-          setTempFiles([...dupTempFile])
-        },
-      });
+      
+      let img = new Image()
+      img.src = window.URL.createObjectURL(acceptedFiles[i])
+      img.onload = () => {
+        let newHeight: number = 600
+        let newWidth: number = (newHeight * img.width)/img.height
+
+        //resize image file
+        convert({ 
+          file: acceptedFiles[i],  
+          width: newWidth, 
+          height: newHeight, 
+          type: 'jpg'
+          }).then((resp) => {
+
+            //compress image file
+            new Compressor(resp, {
+              quality: 0.08,
+              success: (compressedResult) => {
+                let tempFile: File = new File([compressedResult], `${i}.${compressedResult.type.split("image/")[1]}`)
+                dupTempFile.push(tempFile)
+                setTempFiles([...dupTempFile])
+              }
+            })
+        }).catch(error => {})
+
+      }
     }
   }, [])
 

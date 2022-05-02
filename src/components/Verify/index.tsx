@@ -19,6 +19,7 @@ import { CookieArgs } from '../../types'
 import { ObjectId } from 'bson'
 import { SpinnerCircularFixed } from 'spinners-react';
 import Compressor from 'compressorjs';
+import convert from 'image-file-resize';
 
 
 const VerifyAccount: NextPage =(): ReactElement=>{
@@ -114,13 +115,30 @@ const VerifyAccount: NextPage =(): ReactElement=>{
             id="contained-button-file"
             type="file"
             onChange={(e: ChangeEvent<HTMLInputElement>)=>{
-              new Compressor(e.target.files[0], {
-                quality: 0.1,
-                success: (compressedResult) => {
-                  let tempFile: File = new File([compressedResult], `0.${compressedResult.type.split("image/")[1]}`)
-                  setImageID(tempFile)
-                },
-              });
+              let img = new Image()
+              img.src = window.URL.createObjectURL(e.target.files[0])
+              img.onload = () => {
+                let newHeight: number = 200
+                let newWidth: number = (newHeight * img.width)/img.height
+
+                //resize image file
+                convert({ 
+                  file: e.target.files[0],  
+                  width: newWidth, 
+                  height: newHeight, 
+                  type: 'jpg'
+                  }).then((resp) => {
+
+                    //compress image file
+                    new Compressor(resp, {
+                      quality: 0.08,
+                      success: (compressedResult) => {
+                        let tempFile: File = new File([compressedResult], `0.${compressedResult.type.split("image/")[1]}`)
+                        setImageID(tempFile)
+                      }
+                    })
+                }).catch(error => {})
+              }
             }}/>
 
           <label htmlFor="contained-button-file" style={{display:'grid', placeItems:'center', marginBottom:'5px'}}>
