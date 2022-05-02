@@ -12,7 +12,7 @@ export default makeStyles((theme: Theme)=>({
     placeItems:'center',
   },  
   container:{
-    borderRadius:'5px',
+    borderRadius:0,
     height:'calc(15vh + 400px)',
     minHeight:'400px',
     minWidth:'400px',
@@ -20,6 +20,7 @@ export default makeStyles((theme: Theme)=>({
     background:red[900]
   },
   innerContainer:{
+    borderRadius:0,
     marginTop:'0.5em',
     height:'calc(100% - 2.5em)',
     width:'100%',

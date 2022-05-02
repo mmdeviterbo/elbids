@@ -26,8 +26,8 @@ const Terms=(
     </DialogTitle>
     
     <DialogContent dividers>
-      <Typography variant="body2">
-        This web app is for educational purposes only. Any credentials such as ID image submission(s) will not be saved and is immediately deleted after the verification process.
+      <Typography variant="body2" color="textSecondary" style={{textAlign: "justify"}}>
+        This web application is for educational purposes only. Any credentials such as ID image submission(s) will not be saved and is immediately deleted after the verification process.
       </Typography>
     </DialogContent>
 

@@ -98,10 +98,10 @@ const VerifyAccount: NextPage =(): ReactElement=>{
     <div className={classes.root}>
       {!loading && <Paper elevation={3} className={classes.container}>
           <Typography align="center" variant="h6" className={classes.title}>Account Verification</Typography>
-        <Paper elevation={1} className={classes.innerContainer}>
+        <Paper elevation={0} className={classes.innerContainer}>
           <div>
             <Typography align="center" color="textSecondary" variant="body2">
-              <Link component="button" onClick={()=>setTermsOpen(true)} color="textPrimary">
+              <Link component="button" onClick={()=>setTermsOpen(true)} color="textPrimary" style={{textDecoration: "underline"}}>
                 Terms of Use
               </Link>
             </Typography> 
@@ -141,9 +141,9 @@ const VerifyAccount: NextPage =(): ReactElement=>{
               }
             }}/>
 
-          <label htmlFor="contained-button-file" style={{display:'grid', placeItems:'center', marginBottom:'5px'}}>
-            {!imageID && <Typography align="center" color="textSecondary" variant="body1" paragraph>Upload your UP ID here </Typography>}
-            <Button variant="contained" component="span" startIcon={<PhotoCamera/>} size="small" >Upload</Button>
+          <label htmlFor="contained-button-file" style={{display:'grid', placeItems:'center', marginBottom:'5px', cursor:'pointer'}}>
+            {!imageID && <Typography align="center" color="textSecondary" variant="subtitle2" paragraph>Upload your UP ID here </Typography>}
+            <Button variant="contained" component="span" startIcon={<PhotoCamera/>} size="small" className={classes.submit}>Upload</Button>
           </label>
           <Divider/>
           <Grid container justifyContent='flex-end' spacing={1}>

@@ -54,6 +54,11 @@ export default makeStyles((theme: Theme)=>({
       color:theme.palette.common.white,
       background:theme.palette.common.black
     },
+    "&:disabled":{
+      backgroundColor: "rgba(192,192,192,0.10)",
+      border:'2px solid rgba(200,200,200,0.60)',
+      background:"none"
+    },
     [theme.breakpoints.down('sm')]:{
       width:'100%'
     },

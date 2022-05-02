@@ -3,7 +3,7 @@ import GoogleLogin from 'react-google-login'
 import Cookies from 'js-cookie'
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { Grid, Typography, Link, Box } from '@material-ui/core';
+import { Grid, Typography, Link, Box, Button } from '@material-ui/core';
 import { User } from "../../types"
 import {insertUserMutation, updateUserMutation} from "./mutation"
 import generateToken from './../../utils/generateToken';
@@ -14,6 +14,7 @@ import { useLazyQuery } from '@apollo/client';
 import { NextPage } from 'next';
 import SignInPassword from './SignInPassword'
 import authenticate from './../../utils/authenticate';
+import { SpinnerCircularFixed } from 'spinners-react';
 
 
 const SignIn: NextPage =(): ReactElement=> {
@@ -28,6 +29,16 @@ const SignIn: NextPage =(): ReactElement=> {
   
   const classes = useStyles({})
   const router = useRouter()
+
+  let loadingSpinner: ReactElement = (
+    <SpinnerCircularFixed
+      size={18}
+      color={'#344345'}
+      thickness={90}
+      speed={250}
+      enabled={true}
+  />
+  )
 
   useEffect(()=>{
     const validateCurrUser=async()=>{
@@ -63,7 +74,7 @@ const SignIn: NextPage =(): ReactElement=> {
     })
   }
 
-  const [insertOneUser] = useMutation(insertUserMutation, {
+  const [insertOneUser, insertOneUserState] = useMutation(insertUserMutation, {
     variables: user,
     notifyOnNetworkStatusChange:true,
     awaitRefetchQueries: true,
@@ -73,16 +84,14 @@ const SignIn: NextPage =(): ReactElement=> {
       router.push('/verify')
     }
   })
-
-  const [updateUser] = useMutation(updateUserMutation,{
+  const [updateUser, updateUserState] = useMutation(updateUserMutation,{
     notifyOnNetworkStatusChange:true
   })
 
-  const [findOneUser] = useLazyQuery(userQuery,{
+  const [findOneUser, findOneUserState] = useLazyQuery(userQuery,{
     fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
     nextFetchPolicy: 'cache-first',
-    ssr: false,
     onCompleted:async(e):Promise<void> => {
       const userStatus: string = e?.user?.status
       if(!userStatus) await insertOneUser()
@@ -126,9 +135,14 @@ const SignIn: NextPage =(): ReactElement=> {
           <GoogleLogin
             clientId={"804855284131-20pnrqf3s9c9teqm76dlk6n5lo88er73.apps.googleusercontent.com"}
             render={renderProps => (
-              <button onClick={renderProps.onClick} disabled={renderProps.disabled} className={classes.loginButton}>
+              <Button 
+                onClick={renderProps.onClick} 
+                disabled={renderProps.disabled || insertOneUserState?.loading || updateUserState?.loading ||  findOneUserState?.loading} 
+                className={classes.loginButton}
+                endIcon={(insertOneUserState?.loading || updateUserState?.loading ||  findOneUserState?.loading)? loadingSpinner : null}
+              >
                 <Typography variant="h6">Sign In</Typography>
-              </button>
+              </Button>
             )}
             onSuccess={responseGoogleSuccess}
             onFailure={responseGoogleFail}
@@ -136,9 +150,9 @@ const SignIn: NextPage =(): ReactElement=> {
           />
 
           <Box py={1}>
-          <Typography variant="subtitle2">
-            <Link href="#" color="textSecondary" onClick={()=>setOpenPassword(true)}>Sign in using password</Link>
-          </Typography>
+            <Typography variant="subtitle2">
+              <Link href="#" color="textSecondary" onClick={()=>setOpenPassword(true)}>Sign in using password</Link>
+            </Typography>
           </Box>
         </Grid>
       </Grid>
