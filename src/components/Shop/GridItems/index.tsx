@@ -17,12 +17,12 @@ import { ObjectId } from 'bson'
 import _ from 'lodash'
 import LoaderSpinner from '../../_commons/loaderSpinner'
 
-const GridItems=({postsProp}: {postsProp?: Post[]}): ReactElement=>{
+const GridItems=(): ReactElement=>{
   const user: CookieArgs = getUser()
   const [open, setOpen]=useState<boolean>(false)    //"viewPostDialog" component
   const [postPreview, setPostPreview]=useState<Post>()    //"preview post if clicked" component
 
-  let [posts, setPosts]= useState<Post[]>(postsProp)
+  let [posts, setPosts]= useState<Post[]>()
   let [likePosts, setLikePosts]=useState<ObjectId[]>([])
   let [followingPosts,setFollowingPosts]=useState<ObjectId[]>([])
 

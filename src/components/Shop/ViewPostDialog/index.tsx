@@ -225,6 +225,7 @@ const ViewPostDialog=({
                   transformOrigin={{ vertical: "top", horizontal: "right" }}
                 >
                   <MenuItem onClick={async(): Promise<void> =>{
+                    setAnchorElLogout(null);
                     await deleteOnePost({variables : { _id : new ObjectId(post?._id) }})
                     router.reload()
                   }}>Delete</MenuItem>

@@ -27,7 +27,6 @@ import ChatDrawer from '../../ChatDrawer'
 import BannedDialog from './BannedDialog'
 import RejectedDialog from './RejectedDialog'
 import NotificationIcon from './NotificationsIcon'
-import client from '../../../client'
 
 const Header: NextPage=(): ReactElement=> {
   const user: CookieArgs = getUser()
@@ -304,7 +303,6 @@ const Header: NextPage=(): ReactElement=> {
                 }
                 <MenuItem onClick={async(): Promise<void> =>{
                   setAnchorElLogout(null);
-                  client.resetStore()
                   Cookies.set('currentUser')
                   router.push('/signin')
                 }}>
