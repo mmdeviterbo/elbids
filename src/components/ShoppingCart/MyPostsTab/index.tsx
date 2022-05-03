@@ -90,6 +90,8 @@ const MyPostsTab=(
             style={{boxShadow:'none'}}
             onClick={async(): Promise<void> =>{
             setAnchorElLogout(null);
+            let tempMyPost: Post[] = myPosts?.filter((myPost: Post)=>myPost?._id.toString()!==selectedPostId.toString())
+            setMyPosts([...tempMyPost])
             await deleteOnePost({variables : { _id : selectedPostId }})
             await myPostsState.refetch()
           }}>Delete</MenuItem>
