@@ -18,7 +18,7 @@ const ShopPage=({postsProp}: {postsProp?: Post[]}):ReactElement=>{
 export default ShopPage
 
 export const getStaticProps=async()=>{
-  const posts = await client.query({ query: postsQuery })
+  const posts = await client.query({ query: postsQuery, canonizeResults: true })
   return {
     props: { postsProp: posts?.data?.findManyPosts },
   }
