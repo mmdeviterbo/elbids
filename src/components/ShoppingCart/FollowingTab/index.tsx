@@ -92,7 +92,7 @@ const FollowingTab=(
       <Box mb={4}>
         <Typography variant={'h5'}><strong>Followed Items</strong></Typography>
       </Box>
-      {/* <LoaderSpinner isVisible={followingPostsState?.loading || loading}/> */}
+      <LoaderSpinner isVisible={followingPostsState?.loading}/>
       {followingPosts?.map((followingPost: Post): ReactElement=>{
         return (
           <CardCard

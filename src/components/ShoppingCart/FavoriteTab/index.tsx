@@ -94,7 +94,7 @@ const LikesTab=(
       <Box mb={4}>
         <Typography variant={'h5'}><strong>Favorite Items</strong></Typography>
       </Box>
-      {/* <LoaderSpinner isVisible={favoritePostsState?.loading || loading}/> */}
+      <LoaderSpinner isVisible={favoritePostsState?.loading}/>
       {favoritePosts?.map((favePost: Post): ReactElement=>{
         return (
           <CardCard
