@@ -61,6 +61,8 @@ const FollowingTab=(
         <IconButton
           color="inherit"
           onClick={async(): Promise<void>=>{
+            let tempFollowingPosts: Post[] = followingPosts?.filter((followPost: Post)=> post?._id.toString()!==followPost?._id?.toString())
+            setFollowingPosts(tempFollowingPosts)
             await updateUser({
               variables: { email : user?.email, following_id: post?._id, isFollow: false }
             })
@@ -90,7 +92,7 @@ const FollowingTab=(
       <Box mb={4}>
         <Typography variant={'h5'}><strong>Followed Items</strong></Typography>
       </Box>
-      <LoaderSpinner isVisible={followingPostsState?.loading || loading}/>
+      {/* <LoaderSpinner isVisible={followingPostsState?.loading || loading}/> */}
       {followingPosts?.map((followingPost: Post): ReactElement=>{
         return (
           <CardCard

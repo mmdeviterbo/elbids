@@ -64,6 +64,8 @@ const LikesTab=(
         <IconButton 
           color="inherit"
           onClick={async(): Promise<void>=>{
+            let tempFavePosts: Post[] = favoritePosts?.filter((favePost: Post)=> post?._id.toString()!==favePost?._id?.toString())
+            setFavoritePosts(tempFavePosts)
             await updateUser({
               variables: { email : user?.email, favorite_id: post?._id, isFavorite: false }
             })
@@ -92,7 +94,7 @@ const LikesTab=(
       <Box mb={4}>
         <Typography variant={'h5'}><strong>Favorite Items</strong></Typography>
       </Box>
-      <LoaderSpinner isVisible={favoritePostsState?.loading || loading}/>
+      {/* <LoaderSpinner isVisible={favoritePostsState?.loading || loading}/> */}
       {favoritePosts?.map((favePost: Post): ReactElement=>{
         return (
           <CardCard
