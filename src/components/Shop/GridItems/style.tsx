@@ -4,6 +4,9 @@ export default makeStyles((theme: Theme)=>({
   root:{
     minHeight:'95vh',
     borderLeft:'1px solid rgba(0,0,0,0.20)',
+    [theme.breakpoints.down('sm')]:{
+      borderLeft:'0',
+    }
   },
   cardItem:{
     width:'calc(150px + 2vw)',
