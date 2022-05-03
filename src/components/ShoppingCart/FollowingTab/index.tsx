@@ -62,7 +62,7 @@ const FollowingTab=(
           color="inherit"
           onClick={async(): Promise<void>=>{
             let tempFollowingPosts: Post[] = followingPosts?.filter((followPost: Post)=> post?._id.toString()!==followPost?._id?.toString())
-            setFollowingPosts(tempFollowingPosts)
+            setFollowingPosts([...tempFollowingPosts])
             await updateUser({
               variables: { email : user?.email, following_id: post?._id, isFollow: false }
             })

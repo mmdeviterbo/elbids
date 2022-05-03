@@ -65,7 +65,7 @@ const LikesTab=(
           color="inherit"
           onClick={async(): Promise<void>=>{
             let tempFavePosts: Post[] = favoritePosts?.filter((favePost: Post)=> post?._id.toString()!==favePost?._id?.toString())
-            setFavoritePosts(tempFavePosts)
+            setFavoritePosts([...tempFavePosts])
             await updateUser({
               variables: { email : user?.email, favorite_id: post?._id, isFavorite: false }
             })
