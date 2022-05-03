@@ -6,7 +6,6 @@ export default makeStyles((theme: Theme)=>({
     minHeight:'600px',
     width:'calc(170px + 7vw)',
     minWidth:'calc(170px + 7vw)',
-    borderRight:'1px solid rgba(0,0,0,0.20)',
     [theme.breakpoints.down('sm')]:{
       display:'none'
     }

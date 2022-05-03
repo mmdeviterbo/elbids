@@ -13,18 +13,17 @@ import { useRouter } from 'next/router';
 import sortByPosts from '../../../utils/sortBy'
 import ViewPostDialog from '../ViewPostDialog'
 import userMutation from './mutation'
-import { CookieArgs } from './../../../types/index';
+import { CookieArgs, Post } from './../../../types/index';
 import { ObjectId } from 'bson'
 import _ from 'lodash'
 import LoaderSpinner from '../../_commons/loaderSpinner'
 
-
-const GridItems=(): ReactElement=>{
+const GridItems=({postsProp}: {postsProp?: Post[]}): ReactElement=>{
   const user: CookieArgs = getUser()
   const [open, setOpen]=useState<boolean>(false)    //"viewPostDialog" component
   const [postPreview, setPostPreview]=useState<Post>()    //"preview post if clicked" component
 
-  let [posts, setPosts]= useState<Post[]>([])
+  let [posts, setPosts]= useState<Post[]>(postsProp)
   let [likePosts, setLikePosts]=useState<ObjectId[]>([])
   let [followingPosts,setFollowingPosts]=useState<ObjectId[]>([])
 
@@ -48,13 +47,12 @@ const GridItems=(): ReactElement=>{
     returnPartialData:true,
     onCompleted:(e): void=>{
       let resPosts: Post[] = e?.findManyPosts 
-      setPosts(resPosts) 
+      setPosts(resPosts)
     }
   })
 
   const [updateUser] = useMutation(userMutation,{ 
     notifyOnNetworkStatusChange: true,
-
   })
 
   const likePostsState = useQuery(userQuery,{   //returns favorite_ids[] and following_ids[] from User
@@ -164,10 +162,10 @@ const GridItems=(): ReactElement=>{
 
         <LoaderSpinner isVisible={loading}/>
         <Box display="flex" flexWrap="wrap" justifyContent="flex-start" alignItems="flex-start" p={2} gridGap={4}>
-          {!loading && posts && posts.map((post: Post): ReactElement=>{
+          {posts?.map((post: Post): ReactElement=>{
             return(
               <Box position='relative' key={post?._id.toString()}>
-                {likePostsState?.data?.findOneUser?._id !== post?.seller_id && <Box position="absolute" display="flex" justifyContent={'flex-end'} width="100%" p={1.5}>
+                {likePostsState?.data?.findOneUser && likePostsState?.data?.findOneUser?._id !== post?.seller_id && <Box position="absolute" display="flex" justifyContent={'flex-end'} width="100%" p={1.5}>
                   <Tooltip title="Notify about this item" placement="top">
                     <IconButton 
                       aria-label="toggle-theme"

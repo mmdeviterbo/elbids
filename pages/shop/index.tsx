@@ -1,9 +1,25 @@
 import { ReactElement } from "react";
 import Shop from "../../src/components/Shop";
-import layout from "../../src/components/_commons/layout";
-import { NextPage } from 'next';
+import client from '../../src/client'
+import { postsQuery } from "../../src/components/Shop/GridItems/query";
+import { Post } from './../../src/types/index';
+import Header from "../../src/components/_commons/header";
+import Footer from "../../src/components/_commons/footer";
 
-const ShopPage:NextPage=():ReactElement=>{
-  return <Shop/>
+const ShopPage=({postsProp}: {postsProp?: Post[]}):ReactElement=>{
+  return (
+    <>
+      <Header/>
+      <Shop postsProp={postsProp}/>
+      <Footer/>
+    </>
+  )
 }
-export default layout(ShopPage)
+export default ShopPage
+
+export const getStaticProps=async()=>{
+  const posts = await client.query({ query: postsQuery })
+  return {
+    props: { postsProp: posts?.data?.findManyPosts },
+  }
+}
