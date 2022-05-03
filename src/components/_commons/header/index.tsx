@@ -304,7 +304,7 @@ const Header: NextPage=(): ReactElement=> {
                 }
                 <MenuItem onClick={async(): Promise<void> =>{
                   setAnchorElLogout(null);
-                  await client.resetStore()
+                  await client.clearStore()
                   Cookies.set('currentUser')
                   router.push('/signin')
                 }}>
