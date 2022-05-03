@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useLazyQuery, useQuery, useMutation } from '@apollo/client'
 import { postsQuery, userQuery } from './query'
-import { Post, PostFilter, CATEGORY, SORT_BY, TIMER_OPTIONS } from '../../../types'
+import { Post, PostFilter, CATEGORY, SORT_BY, TIMER_OPTIONS, CookieArgs  } from '../../../types'
 import { Box, Typography, Select, MenuItem, IconButton, Tooltip } from '@material-ui/core'
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -13,7 +13,6 @@ import { useRouter } from 'next/router';
 import sortByPosts from '../../../utils/sortBy'
 import ViewPostDialog from '../ViewPostDialog'
 import userMutation from './mutation'
-import { CookieArgs, Post } from './../../../types/index';
 import { ObjectId } from 'bson'
 import _ from 'lodash'
 import LoaderSpinner from '../../_commons/loaderSpinner'
