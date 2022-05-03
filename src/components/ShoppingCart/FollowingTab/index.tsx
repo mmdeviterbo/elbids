@@ -47,7 +47,7 @@ const FollowingTab=(
     }catch(err){}
   },[])
 
-  const [updateUser] = useMutation(updateUserMutation,{
+  const [updateUser, {loading}] = useMutation(updateUserMutation,{
     notifyOnNetworkStatusChange: true,
     onCompleted:async(e): Promise<void>=>{
       await followingPostsState.refetch()
@@ -90,7 +90,7 @@ const FollowingTab=(
       <Box mb={4}>
         <Typography variant={'h5'}><strong>Followed Items</strong></Typography>
       </Box>
-      <LoaderSpinner isVisible={followingPostsState?.loading}/>
+      <LoaderSpinner isVisible={followingPostsState?.loading || loading}/>
       {followingPosts?.map((followingPost: Post): ReactElement=>{
         return (
           <CardCard

@@ -50,7 +50,7 @@ const LikesTab=(
   },[])
 
 
-  const [updateUser] = useMutation(updateUserMutation,{
+  const [updateUser, {loading}] = useMutation(updateUserMutation,{
     notifyOnNetworkStatusChange: true,
     onCompleted:async(e): Promise<void>=>{
       await favoritePostsState.refetch()
@@ -92,7 +92,7 @@ const LikesTab=(
       <Box mb={4}>
         <Typography variant={'h5'}><strong>Favorite Items</strong></Typography>
       </Box>
-      <LoaderSpinner isVisible={favoritePostsState?.loading}/>
+      <LoaderSpinner isVisible={favoritePostsState?.loading || loading}/>
       {favoritePosts?.map((favePost: Post): ReactElement=>{
         return (
           <CardCard
