@@ -27,6 +27,7 @@ import ChatDrawer from '../../ChatDrawer'
 import BannedDialog from './BannedDialog'
 import RejectedDialog from './RejectedDialog'
 import NotificationIcon from './NotificationsIcon'
+import client from '../../../client'
 
 const Header: NextPage=(): ReactElement=> {
   const user: CookieArgs = getUser()
@@ -85,10 +86,6 @@ const Header: NextPage=(): ReactElement=> {
   const [anchorElLogout, setAnchorElLogout] = useState<null | HTMLElement>(null);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleClickLogout=(event: React.MouseEvent<HTMLButtonElement>): void =>{
-    setAnchorElLogout(event.currentTarget);
-  }
 
   const handleCloseLogout = (): void => {
     setAnchorElLogout(null);
@@ -238,7 +235,7 @@ const Header: NextPage=(): ReactElement=> {
                 aria-label="logout" 
                 color="inherit" 
                 edge="end"
-                onClick={handleClickLogout}
+                onClick={(e)=>setAnchorElLogout(e.currentTarget)}
               >
                 <Badge color="secondary">
                   <ArrowDropDownIcon fontSize="small"/>
@@ -305,8 +302,9 @@ const Header: NextPage=(): ReactElement=> {
                     </Box>
                   </MenuItem>
                 }
-                <MenuItem onClick={(): void =>{
+                <MenuItem onClick={async(): Promise<void> =>{
                   setAnchorElLogout(null);
+                  await client.resetStore()
                   Cookies.set('currentUser')
                   router.push('/signin')
                 }}>
