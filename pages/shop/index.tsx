@@ -21,5 +21,6 @@ export const getStaticProps=async()=>{
   const posts = await client.query({ query: postsQuery, canonizeResults: true })
   return {
     props: { postsProp: posts?.data?.findManyPosts },
+    revalidate: 1,
   }
 }
