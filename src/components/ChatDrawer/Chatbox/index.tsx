@@ -56,6 +56,7 @@ const Chatbox=({
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy:'cache-first',
+    returnPartialData: true,
     pollInterval: 500,
     onCompleted:async(e): Promise<void>=>{
       let tempManyConversations: ConversationType[] = e?.findManyConversations
@@ -86,6 +87,7 @@ const Chatbox=({
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
+    returnPartialData: true,
     pollInterval: 500,
     onCompleted:(e)=>{
       setMessages(e?.findManyMessages)

@@ -29,6 +29,7 @@ const NotificationIcon=({
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
     pollInterval: 1000,
+    returnPartialData: true,
     onCompleted:(e)=>{
       if(e?.notifications && !_.isEqual(e?.notifications, notifications)){
         setNotifications([...e?.notifications].reverse())

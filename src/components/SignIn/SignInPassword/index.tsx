@@ -39,7 +39,6 @@ const SignInPassword=({
   })
 
   const [findOneUser, { data, loading }] = useLazyQuery(userQuery,{
-    ssr:false,
     fetchPolicy:'cache-and-network',
     notifyOnNetworkStatusChange: true,
     onCompleted:async(e): Promise<void>=>{

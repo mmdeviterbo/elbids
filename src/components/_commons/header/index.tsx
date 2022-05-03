@@ -4,7 +4,6 @@ import { green, red, yellow } from '@material-ui/core/colors';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/PersonOutlineOutlined';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCartOutlined';
-import NotificationsIcon from '@material-ui/icons/NotificationsNoneOutlined';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -18,8 +17,8 @@ import {CATEGORY, PostFilter, TIMER_OPTIONS, STATUS, CookieArgs } from '../../..
 import getUser from './../../../utils/getUser';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useLazyQuery } from '@apollo/client'
-import userQuery from './query'
+import { useLazyQuery, useQuery} from '@apollo/client'
+import { userQuery, checkTimerPostsQuery } from './query'
 import Cookies from 'js-cookie'
 import useStyles from './style';
 import queryString from 'query-string';
@@ -41,13 +40,22 @@ const Header: NextPage=(): ReactElement=> {
   const querySearch = router.query.search as string
   const queryTags = router.query.tags as string
 
-  const [getUserState, {data, previousData}] = useLazyQuery(userQuery,{
+  const [getUserState, { data }] = useLazyQuery(userQuery,{
     variables: { email: user?.email},
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy:'cache-first',
     notifyOnNetworkStatusChange: true,
     pollInterval: 1000,
+    returnPartialData: true
+  })
 
+  const checkPosts = useQuery(checkTimerPostsQuery,{
+    variables: { _id: user?._id },
+    skip: !user?._id,
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy:'cache-first',
+    notifyOnNetworkStatusChange: true,
+    pollInterval: 5000
   })
 
   const statusTooltip=():string=>{

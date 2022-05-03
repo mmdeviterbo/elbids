@@ -65,7 +65,6 @@ const ViewPost=(props): ReactElement=>{
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    ssr: false,
     onCompleted:(e)=>{
       let tempLikeIds: ObjectId[] = e?.findOneUser?.favorite_ids
       let tempFollowingIds: ObjectId[] = e?.findOneUser?.following_ids
@@ -89,7 +88,6 @@ const ViewPost=(props): ReactElement=>{
     variables: { _id: new ObjectId(post_id), deleted: false },
     notifyOnNetworkStatusChange: true,
     pollInterval: 500,
-    ssr: false,
     fetchPolicy: 'cache-and-network'
   })
 

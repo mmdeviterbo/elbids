@@ -70,7 +70,6 @@ const ReportsTab=({
     variables: { _id : user?._id },
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
-    ssr:false,
     onCompleted:(e)=>{
       let summaryPosts: Post[] = e?.findSummaryReportPosts
       if((summaryPosts && !posts) || !_.isEqual(summaryPosts, posts)) setPosts([...summaryPosts])
