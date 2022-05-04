@@ -198,7 +198,7 @@ const AddItemDialog: NextPage=():ReactElement=> {
         aria-labelledby="max-width-dialog-title"
       >
         <DialogTitle id="max-width-dialog-title" className={classes.title}>
-          <Typography variant="body1">BID YOUR ITEM</Typography>
+          <Typography variant="body1">ADD YOUR ITEM</Typography>
         </DialogTitle>
         
         <DialogContent>
