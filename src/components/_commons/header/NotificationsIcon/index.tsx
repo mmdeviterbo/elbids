@@ -28,12 +28,14 @@ const NotificationIcon=({
     notifyOnNetworkStatusChange: true,
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
-    pollInterval: 1000,
+    pollInterval: 500,
     returnPartialData: true,
     onCompleted:(e)=>{
-      if(e?.notifications && !_.isEqual(e?.notifications, notifications)){
-        setNotifications([...e?.notifications].reverse())
-        let lenUnread: number = e?.notifications?.filter((notif: Notification)=>notif?.read === false)?.length
+      if(e?.notifications){
+        let tempNotifs: Notification[] = [...e?.notifications]
+        const sortedNotifArray = _.orderBy(tempNotifs, [(obj) => new Date(obj?.date_created)], ['desc'])
+        setNotifications([...sortedNotifArray])
+        let lenUnread: number = tempNotifs?.filter((notif: Notification)=>notif?.read === false)?.length
         setLength(lenUnread)
       }
     }
