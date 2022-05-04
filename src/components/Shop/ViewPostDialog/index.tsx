@@ -12,7 +12,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import TimerIcon from '@material-ui/icons/Timer';
 import useStyles from './style'
 import { updateItemMutation, updatePostMutation, deletePostMutation } from './mutation'
-import { userQuery, postQuery, buyerQuery } from './query' 
+import { userQuery, postQuery, buyerQuery, favoriteFollowingLengthQuery } from './query' 
 import getUser from '../../../utils/getUser';
 import { ObjectId } from 'bson';
 import { formatPreviewGallery } from '../../../utils/formatGallery'
@@ -57,6 +57,9 @@ const ViewPostDialog=({
   const [dateFirstBid, setDateFirstBid] = useState<string>(post?.item?.date_first_bid)
   const [anchorElLogout, setAnchorElLogout] = useState<null | HTMLElement>(null);
 
+  const [followingLength, setFollowingLength]= useState<number>(0)
+  const [favoriteLength, setFavoriteLength]= useState<number>(0)
+
   const handleClickLogout=(event: MouseEvent<HTMLButtonElement>): void =>{
     setAnchorElLogout(event.currentTarget);
   }
@@ -74,7 +77,21 @@ const ViewPostDialog=({
     variables: { _id: new ObjectId(post?._id), deleted: false, archived: false },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
+    nextFetchPolicy:'cache-first',
     pollInterval: 500,
+  })
+
+  const favoriteFollowingLength = useQuery(favoriteFollowingLengthQuery,{
+    skip: !post,
+    variables: { post_id: post?._id },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy:'cache-first',
+    pollInterval: 500,
+    onCompleted:(e)=>{
+      setFollowingLength(e?.lengths?.lenFollowingPosts)
+      setFavoriteLength(e?.lengths?.lenFavoritePosts)
+    }
   })
 
   const [deleteOnePost] = useMutation(deletePostMutation,{
@@ -103,6 +120,8 @@ const ViewPostDialog=({
   })
 
   useEffect((): void =>{
+    setFollowingLength(0)
+    setFavoriteLength(0)
     setPost(postPreview)
     setDateFirstBid(postPreview?.item?.date_first_bid)
     setGallery(formatPreviewGallery(postPreview?.item?.gallery?.data))
@@ -387,11 +406,23 @@ const ViewPostDialog=({
                     onClick={async(): Promise<void>=> await handleFollowingButton(post, !isExistArray(followingPosts, post?._id))}
                     >
                     {isExistArray(followingPosts, post?._id)? 
-                      <><NotificationsActiveIcon/>&nbsp;Unfollow</>
+                      <>
+                        <NotificationsActiveIcon/>&nbsp;Unfollow
+                        &nbsp;
+                        {followingLength>0 &&
+                        "(" + followingLength + ")"
+                        }
+                      </>
                       : 
-                      <><NotificationsNoneOutlinedIcon/>&nbsp;Follow</>}
+                      <>
+                        <NotificationsNoneOutlinedIcon/>&nbsp;Follow
+                        &nbsp;
+                        {followingLength>0 && 
+                        "(" + followingLength + ")"
+                        }
+                      </>
+                    }
                   </Button>
-                  
                   <Button
                     disabled={user_id.equals(seller_id)}
                     fullWidth 
@@ -399,9 +430,22 @@ const ViewPostDialog=({
                     onClick={async(): Promise<void>=> await handleLikeButton(post, !isExistArray(likePosts, post?._id))}
                   >
                     {isExistArray(likePosts, post?._id)? 
-                      <><FavoriteIcon/>&nbsp;Remove</>
+                      <>
+                        <FavoriteIcon/>&nbsp;Remove
+                        &nbsp;
+                        {favoriteLength>0 && 
+                        "(" + favoriteLength + ")"
+                        }
+                      </>
                       : 
-                      <><FavoriteBorderIcon/>&nbsp;Favorite</>}
+                      <>
+                        <FavoriteBorderIcon/>&nbsp;Favorite
+                        &nbsp;
+                        {favoriteLength>0 && 
+                        "(" + favoriteLength + ")"
+                        }
+                      </>
+                    }
                   </Button>
                 </Box>
               </>}

@@ -85,11 +85,24 @@ const postQuery = gql`
     }
   }
 `
+const favoriteFollowingLengthQuery = gql`
+  query(
+    $post_id: ID!    
+  ){
+    lengths: findFavoriteFollowingLength(
+      post_id: $post_id    
+    ){
+      lenFollowingPosts
+      lenFavoritePosts
+    }
+  }
+`
 
 export {
   userQuery,
   postQuery,
-  buyerQuery
+  buyerQuery,
+  favoriteFollowingLengthQuery
 }
 
 

@@ -11,7 +11,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import TimerIcon from '@material-ui/icons/Timer';
 import useStyles from './style'
 import { updateItemMutation, updatePostMutation, deletePostMutation, updateUserMutation } from './mutation'
-import { userQuery, postQuery, buyerQuery } from './query' 
+import { userQuery, postQuery, buyerQuery, favoriteFollowingLengthQuery } from './query' 
 import getUser from '../../../utils/getUser';
 import { ObjectId } from 'bson';
 import { formatPreviewGallery } from '../../../utils/formatGallery'
@@ -55,6 +55,9 @@ const ViewPost=(props): ReactElement=>{
   const [description, setDescription]=useState<string>('')
   const [reason, setReason]=useState<string>('')
 
+  const [followingLength, setFollowingLength]= useState<number>(0)
+  const [favoriteLength, setFavoriteLength]= useState<number>(0)
+
   const isExistArray=(postIds: ObjectId[], postId: ObjectId): boolean =>{
     return postIds?.includes(postId)
   }
@@ -70,6 +73,19 @@ const ViewPost=(props): ReactElement=>{
       let tempFollowingIds: ObjectId[] = e?.findOneUser?.following_ids
       if(tempLikeIds && !_.isEqual(likePosts, tempLikeIds)) setLikePosts(tempLikeIds)
       if(tempFollowingIds && !_.isEqual(followingPosts, tempFollowingIds)) setFollowingPosts(tempFollowingIds)
+    }
+  })
+
+  const favoriteFollowingLength = useQuery(favoriteFollowingLengthQuery,{
+    skip: !post,
+    variables: { post_id: post?._id },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy:'cache-first',
+    pollInterval: 500,
+    onCompleted:(e)=>{
+      setFollowingLength(e?.lengths?.lenFollowingPosts)
+      setFavoriteLength(e?.lengths?.lenFavoritePosts)
     }
   })
 
@@ -468,11 +484,23 @@ const ViewPost=(props): ReactElement=>{
                   })
                   await userState.refetch()
                 }}>
-                {isExistArray(followingPosts, post?._id)? 
-                  <><NotificationsActiveIcon/>&nbsp;Unfollow</>
-                  : 
-                  <><NotificationsNoneOutlinedIcon/>&nbsp;Follow</>
-                }
+                  {isExistArray(followingPosts, post?._id)? 
+                    <>
+                      <NotificationsActiveIcon/>&nbsp;Unfollow
+                      &nbsp;
+                      {followingLength>0 &&
+                      "(" + followingLength + ")"
+                      }
+                    </>
+                    : 
+                    <>
+                      <NotificationsNoneOutlinedIcon/>&nbsp;Follow
+                      &nbsp;
+                      {followingLength>0 && 
+                      "(" + followingLength + ")"
+                      }
+                    </>
+                  }
               </Button>
               
               <Button
@@ -488,11 +516,23 @@ const ViewPost=(props): ReactElement=>{
                   })
                   await userState.refetch()
                 }}>
-                {isExistArray(likePosts, post?._id)? 
-                  <><FavoriteIcon/>&nbsp;Remove</>
-                  : 
-                  <><FavoriteBorderIcon/>&nbsp;Favorite</>
-                }
+                  {isExistArray(likePosts, post?._id)? 
+                    <>
+                      <FavoriteIcon/>&nbsp;Remove
+                      &nbsp;
+                      {favoriteLength>0 && 
+                      "(" + favoriteLength + ")"
+                      }
+                    </>
+                    : 
+                    <>
+                      <FavoriteBorderIcon/>&nbsp;Favorite
+                      &nbsp;
+                      {favoriteLength>0 && 
+                      "(" + favoriteLength + ")"
+                      }
+                    </>
+                  }
               </Button>
             </Box>
           </>}
