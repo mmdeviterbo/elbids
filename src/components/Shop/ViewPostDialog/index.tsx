@@ -30,6 +30,7 @@ import NotificationsNoneOutlinedIcon from '@material-ui/icons/NotificationsNoneO
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import ChatDrawer from '../../ChatDrawer';
 import {titleCase} from 'title-case'
+import { SpinnerCircularFixed } from 'spinners-react';
 
 const ViewPostDialog=({
   postPreview,
@@ -60,6 +61,16 @@ const ViewPostDialog=({
   const [followingLength, setFollowingLength]= useState<number>(0)
   const [favoriteLength, setFavoriteLength]= useState<number>(0)
 
+  let loadingSpinner: ReactElement = (
+    <SpinnerCircularFixed
+      size={18}
+      color={'#344345'}
+      thickness={90}
+      speed={250}
+      enabled={true}
+  />
+  )
+
   const handleClickLogout=(event: MouseEvent<HTMLButtonElement>): void =>{
     setAnchorElLogout(event.currentTarget);
   }
@@ -80,7 +91,7 @@ const ViewPostDialog=({
     nextFetchPolicy:'cache-first',
     pollInterval: 500,
   })
-
+  
   const favoriteFollowingLength = useQuery(favoriteFollowingLengthQuery,{
     skip: !post,
     variables: { post_id: post?._id },
@@ -105,7 +116,7 @@ const ViewPostDialog=({
     fetchPolicy: 'cache-and-network'
   })
 
-  const [updateItem] = useMutation(updateItemMutation,{
+  const [updateItem, updateItemState] = useMutation(updateItemMutation,{
     notifyOnNetworkStatusChange: true,
     onCompleted:async():Promise<void>=>{
       await handleFollowingButton(post, true)
@@ -364,7 +375,7 @@ const ViewPostDialog=({
             {!post?.archived && 
                 <>
                 <Button
-                  disabled={handleBidderButton()}
+                  disabled={handleBidderButton() || updateItemState.loading}
                   className={classes.button}
                   fullWidth
                   onClick={async(): Promise<void> =>{
@@ -385,17 +396,15 @@ const ViewPostDialog=({
                       updateItemVariable.date_first_bid = new Date().toString()
                     }
                     await updateItem({variables: updateItemVariable})
-                    // if(current_bid === 0 ){
-                    //   router.reload()
-                    // }
                   }}
-                  >
+                  endIcon={updateItemState.loading? loadingSpinner : null}
+                >
                   {isBidding(post)?
-                  <Typography color={handleBidderButton()? "textSecondary" : "textPrimary"} variant="body1">
+                  <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">
                     {`Place a Bid (₱${post?.item?.current_bid+post?.item?.additional_bid})`}
                   </Typography>
                     :
-                  <Typography color={handleBidderButton()? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
+                  <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
                   }
                 </Button>
                 <Box display="flex" flexDirection="row" gridGap={10}>

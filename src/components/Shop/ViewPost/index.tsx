@@ -31,9 +31,9 @@ import LoaderSpinner from '../../_commons/loaderSpinner'
 import TextField from '@material-ui/core/TextField';
 import EditIcon from '@material-ui/icons/Edit';
 import {titleCase} from 'title-case'
+import { SpinnerCircularFixed } from 'spinners-react';
 
-
-const ViewPost=(props): ReactElement=>{
+const ViewPost=(): ReactElement=>{
   
   const user: CookieArgs = getUser()
   const router = useRouter()
@@ -57,6 +57,16 @@ const ViewPost=(props): ReactElement=>{
 
   const [followingLength, setFollowingLength]= useState<number>(0)
   const [favoriteLength, setFavoriteLength]= useState<number>(0)
+
+  let loadingSpinner: ReactElement = (
+    <SpinnerCircularFixed
+      size={18}
+      color={'#344345'}
+      thickness={90}
+      speed={250}
+      enabled={true}
+  />
+  )
 
   const isExistArray=(postIds: ObjectId[], postId: ObjectId): boolean =>{
     return postIds?.includes(postId)
@@ -126,7 +136,7 @@ const ViewPost=(props): ReactElement=>{
     notifyOnNetworkStatusChange: true
   })
 
-  const [updateItem] = useMutation(updateItemMutation,{
+  const [updateItem, updateItemState] = useMutation(updateItemMutation,{
     notifyOnNetworkStatusChange: true,
     onCompleted:async():Promise<void>=>{
       await findPostState.refetch()
@@ -439,7 +449,7 @@ const ViewPost=(props): ReactElement=>{
         {!isEdit && !post?.archived && 
           <>
             <Button
-              disabled={handleBidderButton()}
+              disabled={handleBidderButton() || updateItemState.loading}
               className={classes.button}
               fullWidth
               onClick={async(): Promise<void> =>{
@@ -461,13 +471,14 @@ const ViewPost=(props): ReactElement=>{
                 }
                 await updateItem({variables: updateItemVariable})
               }}
-              >
+              endIcon={updateItemState.loading? loadingSpinner : null}
+            >
               {isBidding(post)?
-                <Typography color={handleBidderButton()? "textSecondary" : "textPrimary"} variant="body1">
+                <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">
                   {`Place a Bid (₱${post?.item?.current_bid+post?.item?.additional_bid})`}
                 </Typography>
                   :
-                <Typography color={handleBidderButton()? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
+                <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
               }
             </Button>
             <Box display="flex" flexDirection="row" gridGap={10}>
