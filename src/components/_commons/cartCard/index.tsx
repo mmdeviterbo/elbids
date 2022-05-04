@@ -54,7 +54,7 @@ const CardCard=({
             }
           }}
         >
-          <Box width={95}>
+          <Box width={95} height={95} position={'relative'} overflow={'hidden'}>
             <img src={`data:image/png;base64,${data[0]}`} draggable={false} alt="" className={classes.image}/>
           </Box>
 
