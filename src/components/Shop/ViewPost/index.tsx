@@ -47,7 +47,6 @@ const ViewPost=(): ReactElement=>{
   const [followingPosts, setFollowingPosts]=useState<ObjectId[]>([])
   const [anchorElLogout, setAnchorElLogout] = useState<null | HTMLElement>(null);
   const post_id = router?.query?.postId as string
-  // const [post_id, setPost_id]=useState<string>()
   
   const editQuery = router?.query?.edit as string
   const [isEdit, setIsEdit]=useState<boolean>(false)
@@ -57,6 +56,8 @@ const ViewPost=(): ReactElement=>{
 
   const [followingLength, setFollowingLength]= useState<number>(0)
   const [favoriteLength, setFavoriteLength]= useState<number>(0)
+
+  const [loader, setLoader] = useState(false)
 
   let loadingSpinner: ReactElement = (
     <SpinnerCircularFixed
@@ -114,9 +115,19 @@ const ViewPost=(): ReactElement=>{
     variables: { _id: new ObjectId(post_id), deleted: false },
     notifyOnNetworkStatusChange: true,
     pollInterval: 500,
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    onCompleted:(e)=>{
+      setPost(e?.findOnePost)
+      setDateFirstBid(e?.findOnePost?.item?.date_first_bid)
+      setGallery(formatPreviewGallery(e?.findOnePost?.item?.gallery?.data))
+    }
   })
-
+  
+  useEffect(()=>{
+    if(post && loader) setLoader(false)
+  },[post])
+  
   useEffect(()=>{
     const refetchPost=async()=>{
       let tempQuery = router?.query?.postId as string
@@ -137,27 +148,12 @@ const ViewPost=(): ReactElement=>{
   })
 
   const [updateItem, updateItemState] = useMutation(updateItemMutation,{
-    notifyOnNetworkStatusChange: true,
-    onCompleted:async():Promise<void>=>{
-      await findPostState.refetch()
-    }
+    notifyOnNetworkStatusChange: true
   })
 
   const [updatePost] = useMutation(updatePostMutation,{
-    notifyOnNetworkStatusChange: true,
-    onCompleted:async(): Promise<void>=>{
-      await findPostState.refetch()
-    }
+    notifyOnNetworkStatusChange: true
   })
-
-  useEffect((): void =>{
-    let post: Post = findPostState?.data?.findOnePost 
-    if(post){
-      setPost(post)
-      setDateFirstBid(post?.item?.date_first_bid)
-      setGallery(formatPreviewGallery(post?.item?.gallery?.data))
-    }
-  },[findPostState?.data])
 
   useEffect(()=>{
     setIsEdit(false)
@@ -449,7 +445,7 @@ const ViewPost=(): ReactElement=>{
         {!isEdit && !post?.archived && 
           <>
             <Button
-              disabled={handleBidderButton() || updateItemState.loading}
+              disabled={handleBidderButton() || updateItemState.loading || loader}
               className={classes.button}
               fullWidth
               onClick={async(): Promise<void> =>{
@@ -469,16 +465,17 @@ const ViewPost=(): ReactElement=>{
                 }else if(current_bid === 0){
                   updateItemVariable.date_first_bid = new Date().toString()
                 }
+                setLoader(true)
                 await updateItem({variables: updateItemVariable})
               }}
-              endIcon={updateItemState.loading? loadingSpinner : null}
+              endIcon={(updateItemState.loading || loader)? loadingSpinner : null}
             >
               {isBidding(post)?
-                <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">
+                <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
                   {`Place a Bid (₱${post?.item?.current_bid+post?.item?.additional_bid})`}
                 </Typography>
                   :
-                <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
+                <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
               }
             </Button>
             <Box display="flex" flexDirection="row" gridGap={10}>
