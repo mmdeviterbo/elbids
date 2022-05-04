@@ -196,7 +196,7 @@ const GridItems=(): ReactElement=>{
                   </Box>
                   <Box mt={1}><Typography component={'span'} variant="body2" color="textSecondary" noWrap>{post.category}</Typography></Box>
                   <Box><Typography variant="subtitle1" color="textPrimary" noWrap><strong>{post?.item?.title?.toUpperCase()}</strong></Typography></Box>
-                  <Typography variant="body1" color="textPrimary" component="span">{`₱${post?.item?.current_bid || post?.item?.starting_price}`}</Typography>
+                  <Typography variant="body1" color="textPrimary" component="span">{`₱${new Intl.NumberFormat().format(post?.item?.current_bid || post?.item?.starting_price)}`}</Typography>
                   {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body2" color="textPrimary" component="span">{` (+${post.item.additional_bid})`}</Typography>}
                   {post?.item.timer!==TIMER_OPTIONS.NA && <Typography variant="body2" color="textSecondary">{post?.item.timer}</Typography>}
                   {post?.item.timer===TIMER_OPTIONS.NA && <Typography variant="body2" color="textSecondary" noWrap>{' '}</Typography>}

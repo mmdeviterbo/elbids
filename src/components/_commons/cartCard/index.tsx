@@ -66,8 +66,8 @@ const CardCard=({
               </Box>
               
               <Box justifySelf="start">
-                {category===CATEGORY.SALE && <Typography>{`₱${starting_price}`}</Typography>}
-                {category===CATEGORY.BID && <Typography>{`₱${starting_price} (+${additional_bid})`}</Typography>}
+                {category===CATEGORY.SALE && <Typography>{`₱${new Intl.NumberFormat().format(starting_price)}`}</Typography>}
+                {category===CATEGORY.BID && <Typography>{`₱${new Intl.NumberFormat().format(starting_price)} (+${additional_bid})`}</Typography>}
                 <Typography color="textSecondary" variant="caption">{category}</Typography>
                 {category===CATEGORY.BID && <Typography color="textSecondary" variant="caption">{`• ${timer}`}</Typography>}
               </Box>

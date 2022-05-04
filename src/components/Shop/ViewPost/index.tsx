@@ -312,7 +312,7 @@ const ViewPost=(props): ReactElement=>{
 
             <Box display={'flex'} justifyContent='space-between'pt={1} mb={1}>
               <div>
-                <Typography variant={'h5'} color="error" display="inline"><strong>{`PHP ${post?.item?.starting_price} `}</strong></Typography>
+                <Typography variant={'h5'} color="error" display="inline"><strong>{`PHP ${new Intl.NumberFormat().format(post?.item?.starting_price)} `}</strong></Typography>
                 {isBidding(post) && 
                   <Tooltip title="Additional bid" placement="bottom-start">
                     <Typography variant={'h5'} display="inline">{`(+${post?.item?.additional_bid})`}</Typography>
