@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import authenticate from './../src/utils/authenticate';
 import "./style.css"
 import "./chatStyle.css"
+import Header from '../src/utils/header'
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter()
@@ -39,10 +40,7 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Head>
-        <title>ElBids</title>
-        <link rel="shortcut icon" href="/assets/logo.ico" />
-      </Head>
+      <Header/>
       <ApolloProvider client={client}>
         <ThemeProvider theme={themeApp}>
           <CssBaseline/>
