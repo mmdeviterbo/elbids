@@ -86,7 +86,7 @@ const ViewPostDialog=({
   }
 
   const findPost = useQuery(postQuery,{
-    skip: !post || !_.isEqual(post, postPreview),
+    skip: !post?._id || post?._id?.toString()!==postPreview?._id?.toString(),
     variables: { _id: new ObjectId(post?._id), deleted: false, archived: false },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
