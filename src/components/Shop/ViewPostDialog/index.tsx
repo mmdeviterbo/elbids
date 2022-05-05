@@ -61,6 +61,8 @@ const ViewPostDialog=({
   const [followingLength, setFollowingLength]= useState<number>(0)
   const [favoriteLength, setFavoriteLength]= useState<number>(0)
 
+  const [loader, setLoader] = useState(false)
+
   let loadingSpinner: ReactElement = (
     <SpinnerCircularFixed
       size={18}
@@ -88,8 +90,13 @@ const ViewPostDialog=({
     variables: { _id: new ObjectId(post?._id), deleted: false, archived: false },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
-    nextFetchPolicy:'cache-first',
     pollInterval: 500,
+    onCompleted:(e)=>{
+      setPost(e?.findOnePost)
+      setDateFirstBid(e?.findOnePost?.item?.date_first_bid)
+      setGallery(formatPreviewGallery(e?.findOnePost?.item?.gallery?.data))
+      if(!_.isEqual(e?.findOnePost, post) && loader) setLoader(false)
+    }
   })
   
   const favoriteFollowingLength = useQuery(favoriteFollowingLengthQuery,{
@@ -136,12 +143,15 @@ const ViewPostDialog=({
     setPost(postPreview)
     setDateFirstBid(postPreview?.item?.date_first_bid)
     setGallery(formatPreviewGallery(postPreview?.item?.gallery?.data))
+    
+    const refetch=async()=>{
+      await findPost.refetch({ _id: new ObjectId(postPreview?._id), deleted: true, archived: true })
+      await findPost.stopPolling()
+      await findPost.refetch({ _id: new ObjectId(postPreview?._id), deleted: false, archived: false })
+      await findPost.startPolling(500)
+    }
+    if(post?._id !== postPreview?._id) refetch()
   },[postPreview, open])
-
-  useEffect((): void =>{
-    setPost(findPost?.data?.findOnePost)
-    setDateFirstBid(findPost?.data?.findOnePost?.item?.date_first_bid)
-  },[findPost?.data])
 
   let user_id: ObjectId = new ObjectId(userState?.data?.findOneUser?._id)
   let buyer_id: ObjectId = new ObjectId(post?.item?.buyer_id)
@@ -375,7 +385,7 @@ const ViewPostDialog=({
             {!post?.archived && 
                 <>
                 <Button
-                  disabled={handleBidderButton() || updateItemState.loading}
+                  disabled={handleBidderButton() || updateItemState.loading || loader}
                   className={classes.button}
                   fullWidth
                   onClick={async(): Promise<void> =>{
@@ -395,12 +405,13 @@ const ViewPostDialog=({
                     }else if(current_bid === 0){
                       updateItemVariable.date_first_bid = new Date().toString()
                     }
+                    setLoader(true)
                     await updateItem({variables: updateItemVariable})
                   }}
-                  endIcon={updateItemState.loading? loadingSpinner : null}
+                  endIcon={(updateItemState.loading || loader )? loadingSpinner : null}
                 >
                   {isBidding(post)?
-                  <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">
+                  <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
                     {`Place a Bid (₱${post?.item?.current_bid+post?.item?.additional_bid})`}
                   </Typography>
                     :
