@@ -18,7 +18,7 @@ import getUser from './../../../utils/getUser';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useLazyQuery, useQuery} from '@apollo/client'
-import { userQuery, checkTimerPostsQuery } from './query'
+import { userQuery } from './query'
 import Cookies from 'js-cookie'
 import useStyles from './style';
 import queryString from 'query-string';
