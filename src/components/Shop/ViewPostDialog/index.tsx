@@ -55,7 +55,7 @@ const ViewPostDialog=({
   const [gallery, setGallery]= useState<PreviewGallery[]>([]) //set of gallery, [][]
   const [isFinished, setIsFinished]= useState<boolean>(false)
 
-  const [dateFirstBid, setDateFirstBid] = useState<string>(post?.item?.date_first_bid)
+  const [dateFirstBid, setDateFirstBid] = useState<string>(postPreview?.item?.date_first_bid)
   const [anchorElLogout, setAnchorElLogout] = useState<null | HTMLElement>(null);
 
   const [followingLength, setFollowingLength]= useState<number>(0)
@@ -150,7 +150,7 @@ const ViewPostDialog=({
       await findPost.refetch({ _id: new ObjectId(postPreview?._id), deleted: false, archived: false })
       await findPost.startPolling(500)
     }
-    if(post?._id !== postPreview?._id) refetch()
+    if(post?._id?.toString() !== postPreview?._id?.toString()) refetch()
   },[postPreview, open])
 
   let user_id: ObjectId = new ObjectId(userState?.data?.findOneUser?._id)
@@ -204,7 +204,8 @@ const ViewPostDialog=({
     }
   },[isFinished])
 
-  if((days<0 || hours<0 || minutes<0 || seconds<0) && !isFinished && isBidding(post) && isBidExist() && !post?.archived){
+  if(dateFirstBid && (days<0 || hours<0 || minutes<0 || seconds<0) && !isFinished && isBidding(post) && isBidExist() && !post?.archived){
+
     setIsFinished(true)
   }
 
@@ -375,7 +376,7 @@ const ViewPostDialog=({
                         </TableCell>
                         <TableCell align="left">
                           <Typography color="textSecondary" variant="body2">
-                            {(post?.item?.current_bid-post?.item?.starting_price)/post?.item?.additional_bid || ''}
+                            {(post?.item?.current_bid-post?.item?.starting_price)/post?.item?.additional_bid || 1}
                           </Typography>
                         </TableCell>
                       </TableRow>
@@ -392,7 +393,12 @@ const ViewPostDialog=({
                     let updateItemVariable: ItemUpdateArgs = { _id : new ObjectId(post?.item?._id) }
                     const { current_bid, starting_price, additional_bid } = post?.item
 
-                    updateItemVariable.current_bid = current_bid + additional_bid
+                    if(post?.item?.date_first_bid){
+                      updateItemVariable.current_bid = current_bid + additional_bid
+                    }else{
+                      updateItemVariable.current_bid = starting_price
+                    }
+                    
                     updateItemVariable.post_id = new ObjectId(post?._id)
                     updateItemVariable.buyer_id = new ObjectId(userState?.data?.findOneUser?._id)
                     
@@ -411,9 +417,17 @@ const ViewPostDialog=({
                   endIcon={(updateItemState.loading || loader )? loadingSpinner : null}
                 >
                   {isBidding(post)?
-                  <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
-                    {`Place a Bid (₱${post?.item?.current_bid+post?.item?.additional_bid})`}
-                  </Typography>
+                  <>
+                    {post?.item?.date_first_bid?
+                      <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
+                        {`Place a Bid (₱${new Intl.NumberFormat().format(post?.item?.current_bid+post?.item?.additional_bid)})`}
+                      </Typography>
+                      :
+                      <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
+                        {`Place a Bid (₱${new Intl.NumberFormat().format(post?.item?.starting_price)})`}
+                      </Typography>
+                    }
+                  </>
                     :
                   <Typography color={(handleBidderButton() || updateItemState.loading)? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
                   }

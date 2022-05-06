@@ -434,7 +434,7 @@ const ViewPost=(): ReactElement=>{
                     </TableCell>
                     <TableCell align="left">
                       <Typography color="textSecondary" variant="body2">
-                        {(post?.item?.current_bid-post?.item?.starting_price)/post?.item?.additional_bid || ''}
+                        {(post?.item?.current_bid-post?.item?.starting_price)/post?.item?.additional_bid || '1'}
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -452,7 +452,12 @@ const ViewPost=(): ReactElement=>{
                 let updateItemVariable: ItemUpdateArgs = { _id : new ObjectId(post?.item?._id) }
                 const { current_bid, starting_price, additional_bid } = post?.item
 
-                updateItemVariable.current_bid = current_bid + additional_bid
+                if(post?.item?.date_first_bid){
+                  updateItemVariable.current_bid = current_bid + additional_bid
+                }else{
+                  updateItemVariable.current_bid = starting_price
+                }
+                
                 updateItemVariable.post_id = new ObjectId(post?._id)
                 updateItemVariable.buyer_id = new ObjectId(userState?.data?.findOneUser?._id)
                 
@@ -471,9 +476,17 @@ const ViewPost=(): ReactElement=>{
               endIcon={(updateItemState.loading || loader)? loadingSpinner : null}
             >
               {isBidding(post)?
-                <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
-                  {`Place a Bid (₱${post?.item?.current_bid+post?.item?.additional_bid})`}
-                </Typography>
+                <>
+                {post?.item?.date_first_bid?
+                  <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
+                    {`Place a Bid (₱${new Intl.NumberFormat().format(post?.item?.current_bid+post?.item?.additional_bid)})`}
+                  </Typography>
+                  :
+                  <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">
+                    {`Place a Bid (₱${new Intl.NumberFormat().format(post?.item?.starting_price)})`}
+                  </Typography>
+                }
+                </>
                   :
                 <Typography color={(handleBidderButton() || updateItemState.loading || loader)? "textSecondary" : "textPrimary"} variant="body1">Buy Now</Typography>
               }

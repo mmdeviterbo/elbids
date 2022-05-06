@@ -15,17 +15,6 @@ const userQuery = gql`
     }
   }   
 `
-
-const checkTimerPostsQuery = gql`
-  query($_id: ID!){
-    checkerTimerPosts(_id: $_id){
-      _id  
-    }
-  }   
-`
-
-
 export{
   userQuery,
-  checkTimerPostsQuery
 }

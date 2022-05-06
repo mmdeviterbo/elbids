@@ -6,7 +6,6 @@ import { useQuery, useMutation } from '@apollo/client';
 import notificationQuery from './query'
 import updateNotificationsMutation from './mutation';
 import { useRouter } from 'next/router';
-import useStyles from './style'
 import _ from 'lodash'
 import { titleCase } from 'title-case';
 
@@ -16,7 +15,6 @@ const NotificationIcon=({
   user: User
 }): ReactElement=>{
   const router = useRouter()
-  const classes = useStyles()  
 
   const [length, setLength] = useState<number>(0)
   const [notifications, setNotifications]=useState<Notification[]>()
@@ -28,7 +26,7 @@ const NotificationIcon=({
     notifyOnNetworkStatusChange: true,
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
-    pollInterval: 500,
+    pollInterval: 2000,
     returnPartialData: true,
     onCompleted:(e)=>{
       if(e?.notifications){

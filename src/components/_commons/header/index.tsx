@@ -49,15 +49,6 @@ const Header: NextPage=(): ReactElement=> {
     returnPartialData: true
   })
 
-  const checkPosts = useQuery(checkTimerPostsQuery,{
-    variables: { _id: user?._id },
-    skip: !user?._id,
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy:'cache-first',
-    notifyOnNetworkStatusChange: true,
-    pollInterval: 5000
-  })
-
   const statusTooltip=():string=>{
     const status: STATUS = data?.user?.status
     if(status === STATUS.WAITING) return "Your status is currently in reivew"
