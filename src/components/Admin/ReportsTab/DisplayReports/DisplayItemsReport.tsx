@@ -126,7 +126,7 @@ const DisplayItemsReport=({
       </Table>
       {posts?.length>rowsPerPage && <TablePagination
         component="div"
-        count={rows?.length}
+        count={rows?.length || 0}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

@@ -75,7 +75,7 @@ class PrintItemsReport extends Component{
     const { posts } = this.props
     let tempRows = []
     if(!this.state?.rows?.length){
-      posts?.map((post)=>tempRows.push(this.handleItem(post)))
+      posts?.forEach((post)=>tempRows.push(this.handleItem(post)))
       this.setState({rows: [...tempRows]})
     }
   }
@@ -111,21 +111,21 @@ class PrintItemsReport extends Component{
       <Table stickyHeader aria-label="sticky table" size="small">
         <TableHead>
           <TableRow>
-            {this.columns?.map((column) => (
-              <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+            {this.columns?.map((column, index) => (
+              <TableCell key={index} align={column.align} style={{ minWidth: column.minWidth }}>
                 <strong>{column.label}</strong>
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows?.map((row) => {
+          {rows?.map((row, indexing) => {
             return (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                {this.columns?.map((column) => {
+              <TableRow hover role="checkbox" tabIndex={-1} key={indexing}>
+                {this.columns?.map((column, index) => {
                   const value = row[column.id];
                   return (
-                    <TableCell key={column.id} align={column.align}>
+                    <TableCell key={index} align={column.align}>
                       {column.format && typeof value === 'number' ? column.format(value) : value}
                     </TableCell>
                   );

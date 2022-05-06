@@ -1,12 +1,12 @@
 import React, { ReactElement, useRef, useState, useEffect } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { User, Post, CATEGORY, TIMER_OPTIONS } from '../../../types';
+import { User, Post, Analytics } from '../../../types';
 import UsersReport from './PrintReports/PrintUsersReport';
 import ItemsReport from './PrintReports/PrintItemsReport';
-import {Box, Typography, Button, IconButton } from '@material-ui/core'
+import {Box, Typography, IconButton, Paper } from '@material-ui/core'
 import { Accordion, AccordionDetails, AccordionSummary } from '@material-ui/core';
 import { useQuery } from '@apollo/client';
-import { usersQuery, postsQuery } from './query'
+import { usersQuery, postsQuery, analyticsQuery } from './query'
 import LoaderSpinner from '../../_commons/loaderSpinner'
 import useStyles from './style'
 import _ from 'lodash'
@@ -18,6 +18,8 @@ import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import { ListItemText, ListItem }from '@material-ui/core';
 import { useRouter } from 'next/router';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
 
 const ReportsTab=({
   user
@@ -61,10 +63,6 @@ const ReportsTab=({
   })
 
   const [posts,  setPosts] = useState<Post[]>()
-  const [archived,  setArchived] = useState<boolean>()
-  const [category,  setCategory] = useState<CATEGORY>()
-  const [timer,  setTimer] = useState<TIMER_OPTIONS>()
-
   const postsState = useQuery(postsQuery,{
     skip: !user || !user?.admin,
     variables: { _id : user?._id },
@@ -73,6 +71,17 @@ const ReportsTab=({
     onCompleted:(e)=>{
       let summaryPosts: Post[] = e?.findSummaryReportPosts
       if((summaryPosts && !posts) || !_.isEqual(summaryPosts, posts)) setPosts([...summaryPosts])
+    }
+  })
+
+  const [analytics,  setAnalytics] = useState<Analytics>()
+  const analyticsState = useQuery(analyticsQuery,{
+    skip: !user || !user?.admin,
+    fetchPolicy:'cache-and-network',
+    nextFetchPolicy:'cache-first',
+    returnPartialData: true,
+    onCompleted:(e)=>{
+      setAnalytics(e?.findAnalytics)
     }
   })
 
@@ -95,8 +104,52 @@ const ReportsTab=({
         </Typography>
       </Box>
       <LoaderSpinner isVisible={usersState.loading || postsState.loading}/>
+
+      <Box 
+        display={'flex'}
+        flexWrap={'wrap'}
+        flexDirection={'row'}
+        height={120}
+        position={'relative'}
+        justifyContent={'space-between'}
+        mb={2}
+      >
+        <Paper style={{width:'24%', padding: 8 }} square>
+          <ListItem>
+            <GroupIcon fontSize="medium"/>&nbsp;&nbsp;
+            <ListItemText primary={<Typography variant={'h6'}>Total Users</Typography>}/>
+          </ListItem>
+          <Typography variant={'body1'} color="textSecondary" align="center">{analytics?.users_count}</Typography>
+        </Paper>
+        <Paper style={{width:'24%', padding: 8 }} square>
+          <ListItem>
+            <ViewCarouselIcon fontSize="medium"/>&nbsp;&nbsp;
+            <ListItemText primary={<Typography variant={'h6'}>Total Posts</Typography>}/>
+          </ListItem>
+          <Typography variant={'body1'} color="textSecondary" align="center">{analytics?.posts_count}</Typography>
+        </Paper>
+        <Paper style={{width:'24%', padding: 8 }} square>
+          <ListItem>
+            <ReceiptIcon fontSize="medium"/>&nbsp;&nbsp;
+            <ListItemText primary={<Typography variant={'h6'}>Total Sold</Typography>}/>
+          </ListItem>
+          <Typography variant={'body1'} color="textSecondary" align="center">
+            {analytics?.sold_count}
+          </Typography>
+        </Paper>
+        <Paper style={{width:'24%', padding: 8 }} square>
+          <ListItem>
+            <ShoppingCartIcon fontSize="medium"/>&nbsp;&nbsp;
+            <ListItemText primary={<Typography variant={'h6'}>Total Cost</Typography>}/>
+          </ListItem>
+          <Typography variant={'body1'} color="textSecondary" align="center">
+            {`₱${new Intl.NumberFormat().format(analytics?.total_cost)}`}
+          </Typography>
+        </Paper>
+      </Box>
+
+
       <Box className={classes.root}>
-        
         <div style={{ display: 'none' }}>
           {users?.length>0 && <UsersReport users={users} ref={componentRefUsers}/>}
           {posts?.length>0 && <ItemsReport posts={posts} ref={componentRefItems}/>}

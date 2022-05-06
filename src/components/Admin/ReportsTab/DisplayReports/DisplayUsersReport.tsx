@@ -27,7 +27,7 @@ const DisplayUsersReport=({
   users: User[]
 }): ReactElement=> {
   const [rows, setRows] = useState<Data[]>()
-  const [rowsPerPage, setRowsPerPage] = useState(8)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
   const [page, setPage] = useState(0)
   const classes = useStyles();
 
@@ -114,7 +114,7 @@ const DisplayUsersReport=({
       </Table>
     {users?.length>rowsPerPage && <TablePagination
       component="div"
-      count={rows?.length}
+      count={rows?.length || 0}
       rowsPerPage={rowsPerPage}
       page={page}
       onPageChange={handleChangePage}

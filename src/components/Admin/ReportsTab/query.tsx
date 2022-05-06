@@ -57,9 +57,20 @@ const postsQuery = gql`
   }
 `
 
+const analyticsQuery = gql`
+  query{
+    findAnalytics{
+      users_count
+      posts_count
+      sold_count
+      total_cost
+    }
+  }
 
+`
 
 export {
   usersQuery,
-  postsQuery
+  postsQuery,
+  analyticsQuery
 }
