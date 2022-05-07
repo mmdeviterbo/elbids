@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useState, Dispatch, SetStateAction, MouseEvent } from 'react'
 import "react-image-gallery/styles/css/image-gallery.css";
-import { Post, DATE_FORMAT, ItemUpdateArgs, TIMER_OPTIONS, PreviewGallery, UserDisplay } from '../../../types'
+import { Post, DATE_FORMAT, ItemUpdateArgs, TIMER_OPTIONS, PreviewGallery, UserDisplay, Gallery } from '../../../types'
 import { Box, Typography } from '@material-ui/core'
 import { Grid, Button, Dialog, DialogTitle, DialogContent, Divider, Tooltip } from '@material-ui/core';
 import { Avatar, ListItem, ListItemText, ListItemAvatar, MenuItem, Menu } from '@material-ui/core';
@@ -39,7 +39,8 @@ const ViewPostDialog=({
   followingPosts,
   handleFollowingButton,
   open = false,
-  setOpen
+  setOpen,
+  galleryPreview
 }:{
   postPreview?: Post
   likePosts?: ObjectId[]
@@ -47,12 +48,13 @@ const ViewPostDialog=({
   followingPosts?: ObjectId[]
   handleFollowingButton?: (post: Post, isFollow: boolean)=>Promise<void>
   open?: boolean
-  setOpen?: Dispatch<SetStateAction<boolean>>
+  setOpen?: Dispatch<SetStateAction<boolean>>,
+  galleryPreview: Gallery
 }): ReactElement=>{
   const router = useRouter()
   const classes = useStyles()
   const [post, setPost]= useState<Post>(postPreview)
-  const [gallery, setGallery]= useState<PreviewGallery[]>([]) //set of gallery, [][]
+  const [gallery, setGallery]= useState<PreviewGallery[]>(formatPreviewGallery(galleryPreview?.data)) //set of gallery, [][]
   const [isFinished, setIsFinished]= useState<boolean>(false)
 
   const [dateFirstBid, setDateFirstBid] = useState<string>(postPreview?.item?.date_first_bid)
@@ -94,7 +96,6 @@ const ViewPostDialog=({
     onCompleted:(e)=>{
       setPost(e?.findOnePost)
       setDateFirstBid(e?.findOnePost?.item?.date_first_bid)
-      setGallery(formatPreviewGallery(e?.findOnePost?.item?.gallery?.data))
       if(!_.isEqual(e?.findOnePost, post) && loader) setLoader(false)
     }
   })
@@ -142,7 +143,7 @@ const ViewPostDialog=({
     setFavoriteLength(0)
     setPost(postPreview)
     setDateFirstBid(postPreview?.item?.date_first_bid)
-    setGallery(formatPreviewGallery(postPreview?.item?.gallery?.data))
+    setGallery(formatPreviewGallery(galleryPreview?.data))
     
     const refetch=async()=>{
       await findPost.refetch({ _id: new ObjectId(postPreview?._id), deleted: true, archived: true })
@@ -151,7 +152,7 @@ const ViewPostDialog=({
       await findPost.startPolling(500)
     }
     if(post?._id?.toString() !== postPreview?._id?.toString()) refetch()
-  },[postPreview, open])
+  },[postPreview, galleryPreview, open])
 
   let user_id: ObjectId = new ObjectId(userState?.data?.findOneUser?._id)
   let buyer_id: ObjectId = new ObjectId(post?.item?.buyer_id)

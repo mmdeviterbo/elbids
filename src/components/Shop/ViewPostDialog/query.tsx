@@ -70,9 +70,6 @@ const postQuery = gql`
           status
           imageUrl
         }
-        gallery{
-          data
-        }
         date_first_bid
       }
     }

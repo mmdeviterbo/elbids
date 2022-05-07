@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useLazyQuery, useQuery, useMutation } from '@apollo/client'
-import { postsQuery, userQuery } from './query'
-import { Post, PostFilter, CATEGORY, SORT_BY, TIMER_OPTIONS, CookieArgs  } from '../../../types'
+import { postsQuery, userQuery, galleriesQuery } from './query'
+import { Post, PostFilter, CATEGORY, SORT_BY, TIMER_OPTIONS, CookieArgs, Gallery  } from '../../../types'
 import { Box, Typography, Select, MenuItem, IconButton, Tooltip } from '@material-ui/core'
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -21,10 +21,13 @@ const GridItems=(): ReactElement=>{
   const user: CookieArgs = getUser()
   const [open, setOpen]=useState<boolean>(false)    //"viewPostDialog" component
   const [postPreview, setPostPreview]=useState<Post>()    //"preview post if clicked" component
+  const [galleryPreview, setGalleryPreview]=useState<Gallery>()    //"preview post if clicked" component
 
-  let [posts, setPosts]= useState<Post[]>()
-  let [likePosts, setLikePosts]=useState<ObjectId[]>([])
-  let [followingPosts,setFollowingPosts]=useState<ObjectId[]>([])
+
+  const [posts, setPosts]= useState<Post[]>()
+  const [gallery, setGallery]=useState<Gallery[]>([])
+  const [likePosts, setLikePosts]=useState<ObjectId[]>([])
+  const [followingPosts,setFollowingPosts]=useState<ObjectId[]>([])
 
   const [sortBy, setSortBy] = useState<SORT_BY>();
 
@@ -39,7 +42,7 @@ const GridItems=(): ReactElement=>{
   const search = router.query.search as string 
   const tags = router.query.tags as string
 
-  const [findPosts,{ loading }] = useLazyQuery(postsQuery,{
+  const [findPosts, {loading}] = useLazyQuery(postsQuery,{
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -47,6 +50,23 @@ const GridItems=(): ReactElement=>{
     onCompleted:(e): void=>{
       let resPosts: Post[] = e?.findManyPosts 
       setPosts(resPosts)
+    }
+  })
+
+  const findGalleriesState = useQuery(galleriesQuery,{
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    returnPartialData:true,
+    onCompleted:(e): void=>{
+      if(e?.findManyPosts && posts){
+        let result: Gallery[] = []
+        let tempPosts = [...e?.findManyPosts]
+        tempPosts.forEach((tempPost)=>{
+          result.push(tempPost?.item?.gallery)
+        })
+        setGallery([...result])
+      }
     }
   })
 
@@ -128,6 +148,8 @@ const GridItems=(): ReactElement=>{
     return arrIds.includes(itemId)
   }
 
+  const loaderGIF: string = "https://explore.setbuyatoyota.com/app/plugins/set-explore-dealer/img/Ajax-Preloader.gif"
+
   return (
     <>
       <Box flexGrow={1} display="flex" flexDirection={'column'} className={classes.root}>
@@ -162,13 +184,14 @@ const GridItems=(): ReactElement=>{
         <LoaderSpinner isVisible={loading}/>
         <Box display="flex" flexWrap="wrap" justifyContent="flex-start" alignItems="flex-start" p={2} gridGap={4}>
           {posts?.map((post: Post): ReactElement=>{
+            let imageData: Gallery = gallery?.find((image: Gallery)=>image?._id?.toString() === post?.item?.gallery_id?.toString()) 
             return(
               <Box position='relative' key={post?._id.toString()}>
                 {likePostsState?.data?.findOneUser && likePostsState?.data?.findOneUser?._id !== post?.seller_id && <Box position="absolute" display="flex" justifyContent={'flex-end'} width="100%" p={1.5}>
                   <Tooltip title="Notify about this item" placement="top">
                     <IconButton 
                       aria-label="toggle-theme"
-                      onClick={async(): Promise<void>=> await handleFollowingButton(post, !isExistArray(followingPosts, post?._id))}
+                      onClick={async(): Promise<void>=>await handleFollowingButton(post, !isExistArray(followingPosts, post?._id))}
                       style={{margin:1, padding:0}}
                     >
                       {isExistArray(followingPosts, post?._id)? <NotificationsActiveIcon/> : <NotificationsNoneOutlinedIcon/>}
@@ -188,11 +211,14 @@ const GridItems=(): ReactElement=>{
                   key={post._id.toString()}
                   className={classes.cardItem}
                   onClick={async(): Promise<void> =>{
+                    await setGalleryPreview(imageData)
                     await setPostPreview(post)
                     setOpen(!open)
                   }}>
                   <Box className={classes.imageContainer}>
-                    <img src={`data:image/png;base64,${post?.item?.gallery?.data[0]}`} draggable={false} alt="" className={classes.image}/>
+                    <img src={`data:image/png;base64,${imageData?.data[0]}` || ``} draggable={false} alt="" className={classes.image}
+                      onError={(e)=>(e.target as HTMLImageElement).src = loaderGIF}    
+                    />
                   </Box>
                   <Box mt={1}><Typography component={'span'} variant="body2" color="textSecondary" noWrap>{post.category}</Typography></Box>
                   <Box><Typography variant="subtitle1" color="textPrimary" noWrap><strong>{post?.item?.title?.toUpperCase()}</strong></Typography></Box>
@@ -214,6 +240,7 @@ const GridItems=(): ReactElement=>{
         followingPosts={followingPosts}
         open={open}
         setOpen={setOpen}
+        galleryPreview={galleryPreview}
       />
     </>
   )

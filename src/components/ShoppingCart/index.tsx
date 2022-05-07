@@ -57,7 +57,7 @@ const ShoppingCart: NextPage = (): ReactElement=> {
   const [user, setUser]=useState<UserDisplay>()
 
   const handleChange = (_ , newValue: number) => {
-    setValue(newValue);
+    setValue(newValue || 0);
   };
 
   const userState = useQuery(userQuery ,{

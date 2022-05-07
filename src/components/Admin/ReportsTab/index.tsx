@@ -143,7 +143,7 @@ const ReportsTab=({
             <ListItemText primary={<Typography variant={'h6'}>Total Cost</Typography>}/>
           </ListItem>
           <Typography variant={'body1'} color="textSecondary" align="center">
-            {`₱${new Intl.NumberFormat().format(analytics?.total_cost)}`}
+            {`₱${new Intl.NumberFormat().format(analytics?.total_cost || 0)}`}
           </Typography>
         </Paper>
       </Box>
