@@ -19,7 +19,7 @@ import ReceiptIcon from '@material-ui/icons/Receipt';
 import { ListItemText, ListItem }from '@material-ui/core';
 import { useRouter } from 'next/router';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
+import LocalMallIcon from '@material-ui/icons/LocalMall';
 
 const ReportsTab=({
   user
@@ -123,8 +123,8 @@ const ReportsTab=({
         </Paper>
         <Paper style={{width:'24%', padding: 8 }} square>
           <ListItem>
-            <ViewCarouselIcon fontSize="medium"/>&nbsp;&nbsp;
-            <ListItemText primary={<Typography variant={'h6'}>Total Posts</Typography>}/>
+            <LocalMallIcon fontSize="medium"/>&nbsp;&nbsp;
+            <ListItemText primary={<Typography variant={'h6'}>Total Items</Typography>}/>
           </ListItem>
           <Typography variant={'body1'} color="textSecondary" align="center">{analytics?.posts_count}</Typography>
         </Paper>
