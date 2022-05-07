@@ -26,7 +26,7 @@ const NotificationIcon=({
     notifyOnNetworkStatusChange: true,
     fetchPolicy:'cache-and-network',
     nextFetchPolicy:'cache-first',
-    pollInterval: 2000,
+    pollInterval: 500,
     returnPartialData: true,
     onCompleted:(e)=>{
       if(e?.notifications){
