@@ -222,7 +222,7 @@ const ViewPost=(): ReactElement=>{
   },[isFinished])
 
   
-  if((days<0 || hours<0 || minutes<0 || seconds<0) && !isFinished && isBidding(post) && isBidExist() && !post?.archived){
+  if(dateFirstBid && (days<0 || hours<0 || minutes<0 || seconds<0) && !isFinished && isBidding(post) && isBidExist() && !post?.archived){
     setIsFinished(true)
   }
 
